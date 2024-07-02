@@ -13,7 +13,6 @@ def main(full_dir: str):
         df = pd.read_csv(file)
         combined_df = pd.concat([combined_df, df], ignore_index=True)
 
-    # Save the combined DataFrame to a new CSV file
     combined_df.to_csv('full_data.csv', index=False)
 
 if __name__=="__main__":
