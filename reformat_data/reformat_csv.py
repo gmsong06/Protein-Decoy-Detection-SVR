@@ -14,13 +14,15 @@ def main():
                 if data.endswith('.csv'):
                     csv_path = os.path.join(category_path, data)
                     pdb_id = data[:4]
-                    print(f"PDB ID: {pdb_id}")
                     df = pd.read_csv(csv_path)
 
-                    df['pdb_file'] = df['pdb_file'] + "_" + pdb_id
-
-                    print(df['pdb_file'])
+                    for index, value in df['pdb_file'].items():
+                        if df.at[index, 'pdb_file'][-4:] != pdb_id:
+                            df.at[index, 'pdb_file'] = df.at[index, 'pdb_file'] + "_" + pdb_id
+                            print("Appending " + pdb_id)
 
                     df.to_csv(csv_path, index=False)
+
+
 if __name__ == "__main__":
     main()
