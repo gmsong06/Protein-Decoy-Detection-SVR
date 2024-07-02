@@ -25,4 +25,4 @@ def main(dir: str):
     
 
 if __name__ == "__main__":
-    main("all_csvs")
+    main("../all_csvs")
