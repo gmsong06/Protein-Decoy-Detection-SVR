@@ -13,7 +13,7 @@ def dockQ(folder_path):
             pdb_id = filename[:4]
 
             for index, value in data['Decoy'].items():
-                        if data.at[index, 'Decoy'][-4:] != pdb_id:
+                        if not data.at[index, 'Decoy'].endswith(f"_corrected_H_0001_{pdb_id}"):
                             data.at[index, 'Decoy'] = data.at[index, 'Decoy'] + "_corrected_H_0001" + "_" + pdb_id
                             print("Appending " + pdb_id)
 
