@@ -4,7 +4,7 @@ import os
 
 
 main_file = pd.read_csv("combined_data.csv", on_bad_lines='skip')
-
+lst = {}
 def dockQ(folder_path):
     for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
@@ -12,8 +12,11 @@ def dockQ(folder_path):
             data = pd.read_csv(file_path, on_bad_lines='skip')
             pdb_id = filename[:4]
 
+            for index, value in main_file['pdb_file'].items():
+                  lst.add(value[-4:])
+
             for index, value in data['Decoy'].items():
-                        if not data.at[index, 'Decoy'].endswith(f"_corrected_H_0001_{pdb_id}"):
+                        if (not data.at[index, 'Decoy'].endswith(f"_corrected_H_0001_{pdb_id}")) and (pdb_id in lst):
                             data.at[index, 'Decoy'] = data.at[index, 'Decoy'] + "_corrected_H_0001" + "_" + pdb_id
                             print("Appending " + pdb_id)
 
