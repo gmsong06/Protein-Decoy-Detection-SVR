@@ -14,7 +14,7 @@ def dockQ(folder_path):
 
             for index, value in data['Decoy'].items():
                         if data.at[index, 'Decoy'][-4:] != pdb_id:
-                            data.at[index, 'Decoy'] = data.at[index, 'Decoy'] + "_" + pdb_id
+                            data.at[index, 'Decoy'] = data.at[index, 'Decoy'] + "_corrected_H_0001" + "_" + pdb_id
                             print("Appending " + pdb_id)
 
             data.to_csv(file_path, index=False)
