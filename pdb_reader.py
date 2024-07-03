@@ -59,6 +59,11 @@ class Protein:
             return "Invalid chain ID"
         
     
+    def get_interface_residues(self):
+        pass
+
+    def get_interface_atoms(self):
+        pass
 
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
