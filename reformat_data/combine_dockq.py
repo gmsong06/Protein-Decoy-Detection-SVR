@@ -3,7 +3,7 @@ import csv
 import os
 
 
-main_file = pd.read_csv("/home/sr2562/palmer_scratch/combined_data.csv", on_bad_lines='skip')
+main_file = pd.read_csv("combined_data.csv", on_bad_lines='skip')
 
 def dockq(folder_path):
     for filename in os.listdir(folder_path):
