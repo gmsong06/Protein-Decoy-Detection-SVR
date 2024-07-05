@@ -225,4 +225,4 @@ if __name__ == "__main__":
     # print(protein.get_atom_coords('E'))
     #print(protein.get_interface_residues())
     #print(protein.get_interface_atom_ids())
-    print(protein.get_interface_atom_names())
+    print(protein.get_interface_atom_names()) 
