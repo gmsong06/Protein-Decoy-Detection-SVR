@@ -4,24 +4,52 @@ import os
 def main(full_dir: str):
     all_contacts_dfs = []
     interface_rsm_dfs = []
-    
+    interface_flatness_dfs = []
+
+    # Traverse the directory and read the CSV files
     for data_category in os.listdir(full_dir):
         data_category_path = os.path.join(full_dir, data_category)
         if os.path.isdir(data_category_path):
             for data_csv in os.listdir(data_category_path):
+                file_path = os.path.join(data_category_path, data_csv)
                 if data_csv.endswith('_all_contacts.csv'):
-                    all_contacts_dfs.append(pd.read_csv(os.path.join(data_category_path, data_csv)))
+                    print(f"Reading {file_path}")
+                    all_contacts_dfs.append(pd.read_csv(file_path))
                 elif data_csv.endswith('_interface_rsm.csv'):
-                    interface_rsm_dfs.append(pd.read_csv(os.path.join(data_category_path, data_csv)))
-    
+                    print(f"Reading {file_path}")
+                    interface_rsm_dfs.append(pd.read_csv(file_path))
+                elif data_csv.endswith('_interface_flatness.csv'):
+                    print(f"Reading {file_path}")
+                    interface_flatness_dfs.append(pd.read_csv(file_path))
+
+    # Check the lengths of the lists
+    print(f"Found {len(all_contacts_dfs)} '_all_contacts.csv' files")
+    print(f"Found {len(interface_rsm_dfs)} '_interface_rsm.csv' files")
+    print(f"Found {len(interface_flatness_dfs)} '_interface_flatness.csv' files")
+
+    # Ensure lists of DataFrames have the same length
+    min_length = min(len(all_contacts_dfs), len(interface_rsm_dfs), len(interface_flatness_dfs))
+    all_contacts_dfs = all_contacts_dfs[:min_length]
+    interface_rsm_dfs = interface_rsm_dfs[:min_length]
+    interface_flatness_dfs = interface_flatness_dfs[:min_length]
+
     combined_df = pd.DataFrame()
-    
-    for all_contacts_df, interface_rsm_df in zip(all_contacts_dfs, interface_rsm_dfs):
-        merged_df = pd.merge(all_contacts_df, interface_rsm_df, on='pdb_file')
-        combined_df = pd.concat([combined_df, merged_df], ignore_index=True)
-    
-    combined_df.to_csv('combined_data.csv', index=False)
-    print("CSV files have been successfully combined into 'combined_interface_rsm.csv'")
+
+    # Merge the DataFrames
+    for idx, (all_contacts_df, interface_rsm_df, interface_flatness_df) in enumerate(zip(all_contacts_dfs, interface_rsm_dfs, interface_flatness_dfs)):
+        print(f"Merging set {idx+1}")
+        try:
+            merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, interface_flatness_df, on='pdb_file'), on='pdb_file')
+            combined_df = pd.concat([combined_df, merged_df], ignore_index=True)
+        except Exception as e:
+            print(f"Error merging set {idx+1}: {e}")
+
+    # Check if combined_df is empty before saving
+    if not combined_df.empty:
+        combined_df.to_csv('combined_data.csv', index=False)
+        print("CSV files have been successfully combined into 'combined_data.csv'")
+    else:
+        print("No data to combine. Please check the input files.")
 
 if __name__ == "__main__":
     main('all_csvs')
