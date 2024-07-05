@@ -17,10 +17,25 @@ def main():
                     df = pd.read_csv(csv_path)
 
                     for index, value in df['pdb_file'].items():
-                        if df.at[index, 'pdb_file'][-4:] != pdb_id:
-                            df.at[index, 'pdb_file'] = df.at[index, 'pdb_file'] + "_" + pdb_id
-                            print("Appending " + pdb_id)
+                        if value == 'random_3gfk_model_253_3gfk':
+                            print("hi")
+                        if not value.endswith(f"_corrected_H_0001_{pdb_id}"):
+                            print(pdb_id)
+                            df.at[index, 'pdb_file'] = value[:-5] + "_corrected_H_0001" + "_" + pdb_id
+                        
+                        if "random" in data:
+                            if value.startswith("sampled"):
+                                df.at[index, 'pdb_file'] = "random" + value[len("sampled"):].lstrip()
+                            if value.startswith("relaxed"):
+                                df.at[index, 'pdb_file'] = "random" + value[len("relaxed"):].lstrip()
+                        
+                        if "relaxed" in data:
+                            if value.startswith("sampled"):
+                                df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
+                            if value.startswith("random"):
+                                df.at[index, 'pdb_file'] = "relaxed" + value[len("random"):].lstrip()
 
+    
                     df.to_csv(csv_path, index=False)
 
 
