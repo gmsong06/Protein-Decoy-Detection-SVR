@@ -7,7 +7,7 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # Load the data
-df = pd.read_csv('final_combined_data.csv')
+df = pd.read_csv('final_data.csv')
 
 # Split the data
 train, test = train_test_split(df, test_size=0.2, random_state=42)
@@ -38,36 +38,36 @@ test['residuals'] = test['DockQ'] - test['linear_svr_pred']
 # Visualize the performance
 
 # Scatter plot of Predicted vs Actual values
-plt.figure(figsize=(12, 6))
-plt.scatter(train['DockQ'], train['linear_svr_pred'], label='Train', alpha=0.6)
-plt.scatter(test['DockQ'], test['linear_svr_pred'], label='Test', alpha=0.6)
-plt.plot([train['DockQ'].min(), train['DockQ'].max()], [train['DockQ'].min(), train['DockQ'].max()], 'k--', lw=2)
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.title('Predicted vs Actual Values')
-plt.legend()
-plt.show()
+# plt.figure(figsize=(12, 6))
+# plt.scatter(train['DockQ'], train['linear_svr_pred'], label='Train', alpha=0.6)
+# plt.scatter(test['DockQ'], test['linear_svr_pred'], label='Test', alpha=0.6)
+# plt.plot([train['DockQ'].min(), train['DockQ'].max()], [train['DockQ'].min(), train['DockQ'].max()], 'k--', lw=2)
+# plt.xlabel('Actual Values')
+# plt.ylabel('Predicted Values')
+# plt.title('Predicted vs Actual Values')
+# plt.legend()
+# plt.show()
 
-# Residual plot
-plt.figure(figsize=(12, 6))
-plt.scatter(train['linear_svr_pred'], train['residuals'], label='Train', alpha=0.6)
-plt.scatter(test['linear_svr_pred'], test['residuals'], label='Test', alpha=0.6)
-plt.axhline(y=0, color='r', linestyle='--')
-plt.xlabel('Predicted Values')
-plt.ylabel('Residuals')
-plt.title('Residual Plot')
-plt.legend()
-plt.show()
+# # Residual plot
+# plt.figure(figsize=(12, 6))
+# plt.scatter(train['linear_svr_pred'], train['residuals'], label='Train', alpha=0.6)
+# plt.scatter(test['linear_svr_pred'], test['residuals'], label='Test', alpha=0.6)
+# plt.axhline(y=0, color='r', linestyle='--')
+# plt.xlabel('Predicted Values')
+# plt.ylabel('Residuals')
+# plt.title('Residual Plot')
+# plt.legend()
+# plt.show()
 
-# Histogram of residuals
-plt.figure(figsize=(12, 6))
-plt.hist(train['residuals'], bins=30, alpha=0.6, label='Train')
-plt.hist(test['residuals'], bins=30, alpha=0.6, label='Test')
-plt.xlabel('Residuals')
-plt.ylabel('Frequency')
-plt.title('Histogram of Residuals')
-plt.legend()
-plt.show()
+# # Histogram of residuals
+# plt.figure(figsize=(12, 6))
+# plt.hist(train['residuals'], bins=30, alpha=0.6, label='Train')
+# plt.hist(test['residuals'], bins=30, alpha=0.6, label='Test')
+# plt.xlabel('Residuals')
+# plt.ylabel('Frequency')
+# plt.title('Histogram of Residuals')
+# plt.legend()
+# plt.show()
 
 # Calculate and print performance metrics
 mae_train = mean_absolute_error(y_train, train['linear_svr_pred'])
