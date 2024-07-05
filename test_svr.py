@@ -14,9 +14,18 @@ train, test = train_test_split(df, test_size=0.2, random_state=42)
 X_train, X_test = train.drop(columns=['DockQ', 'pdb_file']).values, test.drop(columns=['DockQ', 'pdb_file']).values
 y_train, y_test = train['DockQ'].values, test['DockQ'].values
 
-missing_locations = df.isnull().stack()
-missing_locations = missing_locations[missing_locations]
-print(missing_locations)
+# Getting missing values for a specific column
+specific_column = 'DockQ'
+missing_in_specific_column = df[specific_column].isnull()
+
+# Extracting the 'pdb_file' values where 'DockQ' is missing
+missing_pdb_files = df[missing_in_specific_column]['pdb_file']
+
+# Printing the missing 'pdb_file' values
+print(missing_pdb_files)
+
+# Saving the missing 'pdb_file' values to a text file
+missing_pdb_files.to_csv('missing_pdb_files.txt', index=False, header=False)
 
 # Standardize the data
 scaler = StandardScaler()
