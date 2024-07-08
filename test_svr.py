@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 from sklearn.svm import SVR
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
@@ -77,6 +78,13 @@ test['residuals'] = test['DockQ'] - test['linear_svr_pred']
 # plt.title('Histogram of Residuals')
 # plt.legend()
 # plt.show()
+
+pipeline = Pipeline(steps=[('standardscaler', StandardScaler()),
+                    ('svr', SVR(C= 1.0, epsilon=0.2))])
+
+pipeline.fit(X_train, y_train)
+
+y_pred = pipeline.predict(X_test)
 
 # Calculate and print performance metrics
 mae_train = mean_absolute_error(y_train, train['linear_svr_pred'])

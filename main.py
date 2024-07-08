@@ -7,7 +7,7 @@ import numpy as np
 import os
 import pandas as pd
 
-data = pd.read_csv('name.csv') #replace name with name of big csv file
+data = pd.read_csv('final_data.csv') #replace name with name of big csv file
 
 X = data[['interface_flatness', 'surface_area', 'number_of_contacts']].values
 
