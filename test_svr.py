@@ -46,8 +46,8 @@ train['residuals'] = train['DockQ'] - train['linear_svr_pred']
 test['residuals'] = test['DockQ'] - test['linear_svr_pred']
 
 # Save to CSV
-train_predictions = train[['DockQ', 'linear_svr_pred', 'residuals']]
-test_predictions = test[['DockQ', 'linear_svr_pred', 'residuals']]
+train_predictions = train[['pdb_file', 'DockQ', 'linear_svr_pred', 'residuals']]
+test_predictions = test[['pdb_file','DockQ', 'linear_svr_pred', 'residuals']]
 train_predictions.to_csv('train_preds.csv', index=False)
 test_predictions.to_csv('test_preds.csv', index=False)
 
