@@ -27,22 +27,23 @@ def main(full_dir: str):
     print(f"Found {len(interface_rsm_dfs)} '_interface_rsm.csv' files")
     print(f"Found {len(interface_flatness_dfs)} '_interface_flatness.csv' files")
 
-    # Ensure lists of DataFrames have the same length
-    min_length = min(len(all_contacts_dfs), len(interface_rsm_dfs), len(interface_flatness_dfs))
-    all_contacts_dfs = all_contacts_dfs[:min_length]
-    interface_rsm_dfs = interface_rsm_dfs[:min_length]
-    interface_flatness_dfs = interface_flatness_dfs[:min_length]
-
     combined_df = pd.DataFrame()
 
     # Merge the DataFrames
-    for idx, (all_contacts_df, interface_rsm_df, interface_flatness_df) in enumerate(zip(all_contacts_dfs, interface_rsm_dfs, interface_flatness_dfs)):
-        print(f"Merging set {idx+1}")
-        try:
-            merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, interface_flatness_df, on='pdb_file'), on='pdb_file')
-            combined_df = pd.concat([combined_df, merged_df], ignore_index=True)
-        except Exception as e:
-            print(f"Error merging set {idx+1}: {e}")
+    for idx, all_contacts_df in enumerate(all_contacts_dfs):
+        pdb_file = all_contacts_df['pdb_file'].iloc[0]
+        interface_rsm_df = next((df for df in interface_rsm_dfs if pdb_file in df['pdb_file'].values), None)
+        interface_flatness_df = next((df for df in interface_flatness_dfs if pdb_file in df['pdb_file'].values), None)
+        
+        if interface_rsm_df is not None and interface_flatness_df is not None:
+            print(f"Merging set {idx+1}")
+            try:
+                merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, interface_flatness_df, on='pdb_file'), on='pdb_file')
+                combined_df = pd.concat([combined_df, merged_df], ignore_index=True)
+            except Exception as e:
+                print(f"Error merging set {idx+1}: {e}")
+        else:
+            print(f"Skipping set {idx+1} due to missing files")
 
     # Check if combined_df is empty before saving
     if not combined_df.empty:
