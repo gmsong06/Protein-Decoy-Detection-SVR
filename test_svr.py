@@ -8,7 +8,7 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # Load the data
-df = pd.read_csv('final_data4.csv')
+df = pd.read_csv('final_data.csv')
 
 # Split the data
 train, test = train_test_split(df, test_size=0.2, random_state=42)
@@ -45,6 +45,11 @@ test['linear_svr_pred'] = pipeline.predict(X_test)
 train['residuals'] = train['DockQ'] - train['linear_svr_pred']
 test['residuals'] = test['DockQ'] - test['linear_svr_pred']
 
+# Save to CSV
+train_predictions = train[['DockQ', 'linear_svr_pred', 'residuals']]
+test_predictions = test[['DockQ', 'linear_svr_pred', 'residuals']]
+train_predictions.to_csv('train_preds.csv', index=False)
+test_predictions.to_csv('test_preds.csv', index=False)
 
 # Visualize the performance
 
