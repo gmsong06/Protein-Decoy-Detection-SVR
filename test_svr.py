@@ -28,22 +28,23 @@ print(missing_pdb_files)
 # Saving the missing 'pdb_file' values to a text file
 missing_pdb_files.to_csv('missing_pdb_files.txt', index=False, header=False)
 
-# Standardize the data
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
+# Create a pipeline for scaling and svr with hyperparameters
+pipeline = Pipeline(steps=[
+    ('scaler', StandardScaler()),
+    ('svr', SVR(kernel='linear', C=1.0, epsilon=0.1))
+])
 
-# Train the SVR model
-svr_lin = SVR(kernel='linear')
-svr_lin.fit(X_train_scaled, y_train)
+# Train the pipeline
+pipeline.fit(X_train, y_train)
 
 # Predict on train and test sets
-train['linear_svr_pred'] = svr_lin.predict(X_train_scaled)
-test['linear_svr_pred'] = svr_lin.predict(X_test_scaled)
+train['linear_svr_pred'] = pipeline.predict(X_train)
+test['linear_svr_pred'] = pipeline.predict(X_test)
 
 # Calculate residuals
 train['residuals'] = train['DockQ'] - train['linear_svr_pred']
 test['residuals'] = test['DockQ'] - test['linear_svr_pred']
+
 
 # Visualize the performance
 
@@ -78,13 +79,6 @@ test['residuals'] = test['DockQ'] - test['linear_svr_pred']
 # plt.title('Histogram of Residuals')
 # plt.legend()
 # plt.show()
-
-pipeline = Pipeline(steps=[('standardscaler', StandardScaler()),
-                    ('svr', SVR(C= 1.0, epsilon=0.2))])
-
-pipeline.fit(X_train, y_train)
-
-y_pred = pipeline.predict(X_test)
 
 # Calculate and print performance metrics
 mae_train = mean_absolute_error(y_train, train['linear_svr_pred'])
