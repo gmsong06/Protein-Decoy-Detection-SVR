@@ -53,4 +53,4 @@ def main(full_dir: str):
         print("No data to combine. Please check the input files.")
 
 if __name__ == "__main__":
-    main('all_csvs')
+    main('capri_csvs')

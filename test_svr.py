@@ -14,7 +14,19 @@ parser.add_argument("--output_path", type=str, help="Path to output prediction f
 args = parser.parse_args()
 
 # Load the data
-df = pd.read_csv('final_data_groups.csv')
+df = pd.read_csv('combined_data.csv')
+
+specific_column = 'DockQ'
+missing_in_specific_column = df[specific_column].isnull()
+
+# Extracting the 'pdb_file' values where 'DockQ' is missing
+missing_pdb_files = df[missing_in_specific_column]['pdb_file']
+
+# Printing the missing 'pdb_file' values
+print(missing_pdb_files)
+
+# Saving the missing 'pdb_file' values to a text file
+missing_pdb_files.to_csv('missing_pdb_files.txt', index=False, header=False)
 
 to_remove = args.remove
 
