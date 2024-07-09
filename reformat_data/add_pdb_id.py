@@ -10,7 +10,7 @@ def main():
     #     row['pdb_id'] = row['pdb_file'][-4:]
     
     # print(df['pdb_id'])
-    print(df['pdb_id'])
+    df.to_csv('final_data_groups.csv', index=None)
 
 
 if __name__=="__main__":
