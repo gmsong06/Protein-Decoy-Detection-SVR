@@ -1,96 +1,79 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import LeaveOneGroupOut
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 from sklearn.svm import SVR
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--remove", nargs='+', type=str, help="Features to remove")
+parser.add_argument("--output_path", type=str, help="Path to output prediction file")
+args = parser.parse_args()
 
 # Load the data
-df = pd.read_csv('final_data.csv')
+df = pd.read_csv('final_data_groups.csv')
 
-# Split the data
-train, test = train_test_split(df, test_size=0.2, random_state=42)
-X_train, X_test = train.drop(columns=['DockQ', 'pdb_file']).values, test.drop(columns=['DockQ', 'pdb_file']).values
-y_train, y_test = train['DockQ'].values, test['DockQ'].values
+to_remove = args.remove
 
-# Getting missing values for a specific column
-specific_column = 'DockQ'
-missing_in_specific_column = df[specific_column].isnull()
+if 'none' in to_remove:
+    to_remove = []
 
-# Extracting the 'pdb_file' values where 'DockQ' is missing
-missing_pdb_files = df[missing_in_specific_column]['pdb_file']
+to_remove.append('DockQ')
+to_remove.append('pdb_file')
+to_remove.append('pdb_id')
 
-# Printing the missing 'pdb_file' values
-print(missing_pdb_files)
+print(to_remove)
+print(args.output_path)
 
-# Saving the missing 'pdb_file' values to a text file
-missing_pdb_files.to_csv('missing_pdb_files.txt', index=False, header=False)
+X = df.drop(columns=to_remove)
+y = df['DockQ']
+groups = df['pdb_id']
+pdb_files = df['pdb_file']
 
-# Standardize the data
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
+logo = LeaveOneGroupOut()
 
-# Train the SVR model
-svr_lin = SVR(kernel='linear')
-svr_lin.fit(X_train_scaled, y_train)
+results = []
+predictions = []
 
-# Predict on train and test sets
-train['linear_svr_pred'] = svr_lin.predict(X_train_scaled)
-test['linear_svr_pred'] = svr_lin.predict(X_test_scaled)
+print("BEGINNING LOOPING")
+for train_index, test_index in logo.split(X, y, groups):
+    X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+    y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+    pdb_test = pdb_files.iloc[test_index]
+    print("DATA SPLIT")
+    
+    pipeline = Pipeline([
+        ('scaler', StandardScaler()),
+        ('svr', SVR())
+    ])
+    
+    print("BEGINNING TRAINING")
+    pipeline.fit(X_train, y_train)
+    print("DONE TRAINING")
 
-# Calculate residuals
-train['residuals'] = train['DockQ'] - train['linear_svr_pred']
-test['residuals'] = test['DockQ'] - test['linear_svr_pred']
+    y_pred = pipeline.predict(X_test)
+    print("DONE PREDICTING")
+    
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    
+    results.append({
+        'Group': groups.iloc[test_index].iloc[0],
+        'MAE': mae,
+        'MSE': mse,
+        'R2': r2
+    })
+    
+    for pdb, actual, pred in zip(pdb_test, y_test, y_pred):
+        predictions.append({'pdb_file': pdb, 'actual_DockQ': actual, 'prediction': pred})
 
-# Visualize the performance
+results_df = pd.DataFrame(results)
+print(results_df)
 
-# Scatter plot of Predicted vs Actual values
-# plt.figure(figsize=(12, 6))
-# plt.scatter(train['DockQ'], train['linear_svr_pred'], label='Train', alpha=0.6)
-# plt.scatter(test['DockQ'], test['linear_svr_pred'], label='Test', alpha=0.6)
-# plt.plot([train['DockQ'].min(), train['DockQ'].max()], [train['DockQ'].min(), train['DockQ'].max()], 'k--', lw=2)
-# plt.xlabel('Actual Values')
-# plt.ylabel('Predicted Values')
-# plt.title('Predicted vs Actual Values')
-# plt.legend()
-# plt.show()
-
-# # Residual plot
-# plt.figure(figsize=(12, 6))
-# plt.scatter(train['linear_svr_pred'], train['residuals'], label='Train', alpha=0.6)
-# plt.scatter(test['linear_svr_pred'], test['residuals'], label='Test', alpha=0.6)
-# plt.axhline(y=0, color='r', linestyle='--')
-# plt.xlabel('Predicted Values')
-# plt.ylabel('Residuals')
-# plt.title('Residual Plot')
-# plt.legend()
-# plt.show()
-
-# # Histogram of residuals
-# plt.figure(figsize=(12, 6))
-# plt.hist(train['residuals'], bins=30, alpha=0.6, label='Train')
-# plt.hist(test['residuals'], bins=30, alpha=0.6, label='Test')
-# plt.xlabel('Residuals')
-# plt.ylabel('Frequency')
-# plt.title('Histogram of Residuals')
-# plt.legend()
-# plt.show()
-
-# Calculate and print performance metrics
-mae_train = mean_absolute_error(y_train, train['linear_svr_pred'])
-mse_train = mean_squared_error(y_train, train['linear_svr_pred'])
-r2_train = r2_score(y_train, train['linear_svr_pred'])
-
-mae_test = mean_absolute_error(y_test, test['linear_svr_pred'])
-mse_test = mean_squared_error(y_test, test['linear_svr_pred'])
-r2_test = r2_score(y_test, test['linear_svr_pred'])
-
-print(f'Train MAE: {mae_train}')
-print(f'Train MSE: {mse_train}')
-print(f'Train R²: {r2_train}')
-
-print(f'Test MAE: {mae_test}')
-print(f'Test MSE: {mse_test}')
-print(f'Test R²: {r2_test}')
+predictions_df = pd.DataFrame(predictions)
+predictions_df.to_csv(args.output_path, index=False)
+print(predictions_df)
