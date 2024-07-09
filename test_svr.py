@@ -8,10 +8,27 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--remove", nargs='+', type=str, help="Features to remove")
+parser.add_argument("--output_path", type=str, help="Path to output prediction file")
+args = parser.parse_args()
+
 # Load the data
 df = pd.read_csv('final_data_groups.csv')
 
-X = df.drop(columns=['DockQ', 'pdb_file', 'pdb_id'])
+to_remove = args.remove
+
+if 'none' in to_remove:
+    to_remove = []
+
+to_remove.append('DockQ')
+to_remove.append('pdb_file')
+to_remove.append('pdb_id')
+
+print(to_remove)
+print(args.output_path)
+
+X = df.drop(columns=to_remove)
 y = df['DockQ']
 groups = df['pdb_id']
 pdb_files = df['pdb_file']
@@ -58,5 +75,5 @@ results_df = pd.DataFrame(results)
 print(results_df)
 
 predictions_df = pd.DataFrame(predictions)
-predictions_df.to_csv('predictions.csv', index=False)
+predictions_df.to_csv(args.output_path, index=False)
 print(predictions_df)
