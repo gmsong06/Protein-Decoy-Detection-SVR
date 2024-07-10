@@ -49,6 +49,7 @@ def main():
             model_path = f"/home/ms4688/palmer_scratch/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name[:-len('_corrected_H_0001_')]}.pdb"
         
         native = load_PDB(f"/home/ms4688/palmer_scratch/Targets/Target{pdb_id[-2:]}.pdb")
+        print(pdb_id[-2:])
         model = load_PDB(model_path)
 
         structure = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', model_path)
