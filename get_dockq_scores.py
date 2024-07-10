@@ -1,6 +1,7 @@
 import pandas as pd
 from DockQ.DockQ import load_PDB, run_on_all_native_interfaces
 import Bio.PDB
+import os
 
 with open('missing_pdb_files.txt', 'r') as file:
     lines = file.readlines()
@@ -26,24 +27,23 @@ def get_chain_ids(structure):
 def main():
     scores = {}
     for file in lines:
-        pdb_id = file[-4:]
-        if file_name.startswith("Target"):
-            capri_id = file[-2:]
-        file_name = file[:-5]
+        folder_name = os.path.basename(os.path.dirname(file))
+        pdb_id = folder_name.split('_')[1]
+        file_name = file
         type = "random"
         if file_name.startswith('complex'):
             if file_name[9] == '_':
                 type = "relaxed"
 
             if type == "relaxed":
-                model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/{pdb_id}_relaxed/{file_name}.pdb"
+                model_path = f"/home/ms4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/sampled_{pdb_id}_relaxed/{file_name}.pdb"
             else:
-                model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/rand_{pdb_id}_relaxed/{file_name}.pdb"
+                model_path = f"/home/ms4688/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name}.pdb"
         elif file_name.startswith("random"):
             print(file_name)
-            model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/rand_{pdb_id}_relaxed/{file_name[:-len('_corrected_H_0001_')]}.pdb"
+            model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name[:-len('_corrected_H_0001_')]}.pdb"
         
-        native = load_PDB(f"/home/ms4688/palmer_scratch/Decoys/Capri_SuperSampled/Targets/Targets{capri_id}")
+        native = load_PDB(f"/home/ms4688/palmer_scratch/Targets/Target{pdb_id[-2:]}.pdb")
         model = load_PDB(model_path)
 
         structure = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', model_path)
