@@ -55,6 +55,7 @@ def main():
         chains = get_chain_ids(structure)
 
         chain_map = {chains[0]: chains[0], chains[1]: chains[1]}
+        print(chain_map)
 
         dockq_score = round(run_on_all_native_interfaces(model, native, chain_map=chain_map)[0][(chains[0], chains[1])]['DockQ'], 3)
         scores[file_name + f"_{pdb_id}"] = dockq_score
