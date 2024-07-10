@@ -41,7 +41,7 @@ def main():
                 type = "relaxed"
 
             if type == "relaxed":
-                model_path = f"/home/ms4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/sampled_{pdb_id}_relaxed/{file_name[:-21]}_0001.pdb"
+                model_path = f"/home/ms4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/sampled_{pdb_id}_relaxed/{file_name[:-25]}_0001.pdb"
             else:
                 model_path = f"/home/ms4688/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name}.pdb"
         elif file_name.startswith("random"):
