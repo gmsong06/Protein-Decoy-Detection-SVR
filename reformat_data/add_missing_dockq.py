@@ -29,5 +29,5 @@ def fill_missing_values(file_path_full_data, file_path_missing_values):
 
 if __name__=="__main__":
     data = fill_missing_values(args.full_data, args.missing_values)
-    data.to_csv('final_data.csv', index=False)
+    data.to_csv('final_data_capri.csv', index=False)
     print("Added to csv")
