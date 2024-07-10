@@ -2,6 +2,7 @@ import pandas as pd
 from DockQ.DockQ import load_PDB, run_on_all_native_interfaces
 import Bio.PDB
 import os
+import sys
 
 with open('missing_pdb_files.txt', 'r') as file:
     lines = file.readlines()
@@ -27,9 +28,13 @@ def get_chain_ids(structure):
 def main():
     scores = {}
     for file in lines:
-        folder_name = os.path.basename(os.path.dirname(file))
-        pdb_id = folder_name.split('_')[1]
-        file_name = file
+        #print(file[-3:])
+        #print(os.path.dirname(file))
+        #folder_name = os.path.basename(os.path.dirname(f"{file[:-4]}.pdb"))
+        #print(folder_name)
+        #sys.exit()
+        pdb_id = file[-3:]
+        file_name = file[:-4]
         type = "random"
         if file_name.startswith('complex'):
             if file_name[9] == '_':
