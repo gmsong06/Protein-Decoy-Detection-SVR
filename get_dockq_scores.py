@@ -34,14 +34,14 @@ def main():
                 type = "relaxed"
 
             if type == "relaxed":
-                model_path = f"/home/as4643/palmer_scratch/Decoys/Supersampled_structures/sampled_{pdb_id}/{pdb_id}_relaxed/{file_name}.pdb"
+                model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/{pdb_id}_relaxed/{file_name}.pdb"
             else:
-                model_path = f"/home/as4643/palmer_scratch/Decoys/Supersampled_structures/sampled_{pdb_id}/random_negatives/rand_{pdb_id}_relaxed/{file_name}.pdb"
+                model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/rand_{pdb_id}_relaxed/{file_name}.pdb"
         elif file_name.startswith("random"):
             print(file_name)
-            model_path = f"/home/as4643/palmer_scratch/Decoys/Supersampled_structures/sampled_{pdb_id}/random_negatives/rand_{pdb_id}_relaxed/{file_name[:-len('_corrected_H_0001_')]}.pdb"
+            model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/rand_{pdb_id}_relaxed/{file_name[:-len('_corrected_H_0001_')]}.pdb"
         
-        native = load_PDB(f"/home/as4643/palmer_scratch/Decoys/Supersampled_structures/targets/{pdb_id}_complex_H.pdb")
+        native = load_PDB(f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/targets/{pdb_id}_complex_H.pdb")
         model = load_PDB(model_path)
 
         structure = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', model_path)
