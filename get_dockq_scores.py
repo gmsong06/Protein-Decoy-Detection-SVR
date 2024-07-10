@@ -27,6 +27,8 @@ def main():
     scores = {}
     for file in lines:
         pdb_id = file[-4:]
+        if file_name.startswith("Target"):
+            capri_id = file[-2:]
         file_name = file[:-5]
         type = "random"
         if file_name.startswith('complex'):
@@ -41,7 +43,7 @@ def main():
             print(file_name)
             model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/rand_{pdb_id}_relaxed/{file_name[:-len('_corrected_H_0001_')]}.pdb"
         
-        native = load_PDB(f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/targets/{pdb_id}_complex_H.pdb")
+        native = load_PDB(f"/home/ms4688/palmer_scratch/Decoys/Capri_SuperSampled/Targets/Targets{capri_id}")
         model = load_PDB(model_path)
 
         structure = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', model_path)
