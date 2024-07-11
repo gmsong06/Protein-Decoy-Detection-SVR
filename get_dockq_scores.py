@@ -13,18 +13,23 @@ def get_chain_ids(structure):
     """
     Returns two chain ids for the dimer structure
     """
+    atoms = 0
     chain_id_1 = ''
     chain_id_2 = ''
     for model in structure:
         for chain in model:
-            if chain =! "A":
-                print(chain)
             if not chain_id_1:
                 chain_id_1 = chain.id
             elif chain.id != chain_id_1:
                 chain_id_2 = chain.id
+                print("not chain A")
                 return chain_id_1, chain_id_2
+            for residue in chain:
+                for atom in chain:
+                    atoms +=1 
+    print(atoms)
     return [chain_id_1, chain_id_2]
+    
 
 
 def main():
