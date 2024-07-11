@@ -39,4 +39,4 @@ def main(folder_path):
             print(f'Missing files for PDB ID {pdb_id}. Ensure both random and sampled files are present.')
 
 if __name__ == "__main__":
-    main("/vast/palmer/scratch/ohern/sr2562/Capri_SS_dockq")
+    main("/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_csvs/dockQ")
