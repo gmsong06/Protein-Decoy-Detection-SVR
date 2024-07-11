@@ -22,12 +22,10 @@ def get_chain_ids(structure):
                 chain_id_1 = chain.id
             elif chain.id != chain_id_1:
                 chain_id_2 = chain.id
-                print("not chain A")
                 return chain_id_1, chain_id_2
             for residue in chain:
                 for atom in chain:
                     atoms +=1 
-    print(atoms)
     return [chain_id_1, chain_id_2]
     
 
@@ -55,7 +53,7 @@ def main():
             print(file_name)
             model_path = f"/home/ms4688/palmer_scratch/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name[:-len('_corrected_H_0001_')]}.pdb"
         
-        native = load_PDB(f"/home/ms4688/palmer_scratch/Targets/Target{pdb_id[-2:]}.pdb")
+        native = load_PDB(f"/home/ms4688/palmer_scratch/Protein-Decoy-Detection-SVR/capri_targets/Target{pdb_id[-2:]}.pdb")
         print(pdb_id[-2:])
         model = load_PDB(model_path)
 
