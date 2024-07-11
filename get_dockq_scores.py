@@ -58,6 +58,8 @@ def main():
         model = load_PDB(model_path)
 
         structure = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', model_path)
+        structure2 = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', f"/home/ms4688/palmer_scratch/Protein-Decoy-Detection-SVR/capri_targets/Target{pdb_id[-2:]}.pdb")
+        print(get_chain_ids(structure2))
         chains = get_chain_ids(structure)
 
         chain_map = {chains[0]: chains[0], chains[1]: chains[1]}
