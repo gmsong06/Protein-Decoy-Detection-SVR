@@ -28,12 +28,8 @@ def get_chain_ids(structure):
                     atoms +=1 
     return [chain_id_1, chain_id_2]
     
-structure2 = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', "/home/ms4688/palmer_scratch/Protein-Decoy-Detection-SVR/capri_targets/Target37.pdb")
-structure = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', "/home/ms4688/palmer_scratch/Capri_SuperSampled/sampled_T37/sampled_T37_relaxed/complex.0_0_46_corrected_H_0001.pdb")
-print(get_chain_ids(structure))
-print(get_chain_ids(structure2))
 
-"""
+
 def main():
     scores = {}
     for file in lines:
@@ -79,5 +75,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
