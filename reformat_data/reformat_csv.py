@@ -38,8 +38,7 @@ def main():
                     if value.startswith("random"):
                         df.at[index, 'model'] = "relaxed" + value[len("random"):].lstrip()
 
-
-            # df.to_csv(csv_path, index=False)
+            df.to_csv(csv_path, index=False)
 
 
 if __name__ == "__main__":
