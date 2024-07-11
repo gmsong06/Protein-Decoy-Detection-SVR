@@ -26,9 +26,9 @@ def fill_missing_values(file_path_full_data, folder_path_missing_values):
             # Update the dictionary with values from the current file
             missing_dict.update(dict(zip(missing_values['model'], missing_values['dockQ'])))
 
-    print(missing_dict)
     # Loop through the rows in full_data and fill missing 'DockQ' values
     for index, row in full_data.iterrows():
+        print(row)
         if pd.isna(row['DockQ']):
             pdb_file = row['pdb_file']
 
