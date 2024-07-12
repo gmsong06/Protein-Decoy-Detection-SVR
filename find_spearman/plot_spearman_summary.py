@@ -12,6 +12,7 @@ for method in methods:
 combined_df = pd.concat([data[method].set_index('pdb_id') for method in methods], axis=1, keys=methods)
 combined_df.columns = combined_df.columns.map('_'.join)
 combined_df['average_spearman'] = combined_df[[f'{method}_spearman_correlation' for method in methods]].mean(axis=1)
+combined_df['std_spearman'] = combined_df[[f'{method}_spearman_correlation' for method in methods]].std(axis=1)
 
 # Sort by average Spearman correlation
 df_sorted = combined_df.sort_values(by='average_spearman', ascending=False).reset_index()
@@ -30,14 +31,17 @@ for i, method in enumerate(methods):
             label=method, color=colors[i % len(colors)], 
             markersize=10, markerfacecolor='none', markeredgewidth=1.5)
 
+# Plot the average Spearman correlation with error bars
+ax.errorbar(df_sorted['pdb_id'], df_sorted['average_spearman'], yerr=df_sorted['std_spearman'],
+            fmt='', linestyle='-', color='k', label='Average', capsize=5)
+
 # Customize the plot
-ax.set_xlabel('Protein Targets (pdb_id)')
-ax.set_ylabel('Spearman Correlation (ρ)')
-ax.set_title('Spearman Correlation for Different Methods')
+ax.set_xlabel('CAPRI Targets')
+ax.set_ylabel('Spearman')
 ax.yaxis.grid(True)
 ax.xaxis.grid(False)
 ax.legend()
-ax.set_ylim(0, 1)
+ax.set_ylim(-0.4, 1)
 
 plt.xticks(rotation=45)
 
