@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=pi_ohern,gpu
-#SBATCH --job-name=svr_flatness
+#SBATCH --job-name=svr_capri_all
 ##SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --ntasks-per-core=1
@@ -9,10 +9,10 @@
 #SBATCH --mem-per-cpu=10G
 #SBATCH --gpus=1
 #SBATCH --constraint="p100|v100|rtx2080ti|rtx5000"
-#SBATCH -t 48:00:00
+#SBATCH -t 24:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=gmsong1978@gmail.com
-#SBATCH --output=svr_flatness.out
+#SBATCH --output=svr_capri_all.out
 #SBATCH --requeue
 ##SBATCH --array=1-2
 
@@ -22,4 +22,4 @@ module load miniconda
 conda activate SVR
 
 # This command sends the tasklist to all in the array
-python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/test_svr.py --remove contacts rsm --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions/flatness.csv
+python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr.py --remove none --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri/all.csv
