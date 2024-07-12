@@ -103,9 +103,9 @@ class Protein:
                     res_in_contact_B.add(residue_ids_B[j])
 
         # Combine and sort residues in contact
-        all_residues_in_contact = sorted(res_in_contact_A | res_in_contact_B)
+        #all_residues_in_contact = sorted(res_in_contact_A | res_in_contact_B)
 
-        return all_residues_in_contact
+        return res_in_contact_A, res_in_contact_B
 
     def get_interface_atom_ids(self):
         # returns list of all the names of the ids of all atoms in the interface
