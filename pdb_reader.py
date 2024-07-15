@@ -362,8 +362,8 @@ class Protein:
         for i, posA in enumerate(listA):
             for j, posB in enumerate(listB):
                 if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
-                    res_in_contact_A.add(residue_ids_A[i])
-                    res_in_contact_B.add(residue_ids_B[j])
+                    res_in_contact_A.append(residue_ids_A[i])
+                    res_in_contact_B.append(residue_ids_B[j])
 
         # Combine and sort residues in contact
         all_residues_in_contact = sorted(res_in_contact_A | res_in_contact_B)
