@@ -12,8 +12,5 @@ from pdb_reader import Protein
 
 from pdb_reader import Protein
 Protein1 = Protein("targets/1acb_complex_H.pdb")
-
-
-for item in Protein1.atoms_in_contact_atom_ids():
-    print("hi")
+print(Protein1.contact_dict())
 

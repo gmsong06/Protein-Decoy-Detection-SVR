@@ -520,7 +520,7 @@ class Protein:
                 atom_residue_dict[atomsA[idx]] = residuesA[idx]
                 atom_residue_dict[atomsB[i]] = residuesB[i]
 
-        return len(atom_residue_dict)
+        return atom_residue_dict
 
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
