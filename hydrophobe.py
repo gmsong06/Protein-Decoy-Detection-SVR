@@ -34,7 +34,7 @@ def get_residues(prot):
                     atom_names.append(atom.get_name())
                     coordinates.append(atom.coord)
                     residue_ids.append(residue.id[1])
-                   
+
     def hydrogen_list():
         for i in range(len(atom_names)):
             first_letter = atom_names[i][0]
@@ -47,9 +47,9 @@ def get_residues(prot):
                     atom_names[i] == "not_hydrogen"
             else:
                 atom_names[i] = "not_hydrogen"
-               
+
     hydrogen_list()
-                   
+
     listA = []
     listB = []
     residue_ids_A = []
@@ -71,19 +71,19 @@ def get_residues(prot):
                 cont = [residue_ids_A[i], residue_ids_B[j]]
                 if cont not in res_in_contact:
                     res_in_contact.append(cont)
-                   
+
     return res_in_contact
-   
+
 
 def get_hydro_hits(file):
-    
+
     hydrophobicity_dict = {
             "ARG": 0.72002943, "ASP": 0.75367063, "GLU": 0.87591947, "LYS": 1, "ASN": 0.67819213,
             "GLN": 0.72278272, "PRO": 0.65123555, "HIS":  0.48907553, "SER": 0.52365422, "THR": 0.47798833,
             "GLY": 0.46477639, "TYR": 0.21646225, "ALA": 0.30953653, "CYS": 0, "MET": 0.18184843,
             "TRP":  0.14290738, "VAL": 0.10992156, "PHE": 0.0814021, "LEU": 0.10211201, "ILE": 0.06280283
         }
-    
+
     hits = 0
 
     protein = Protein(file)
@@ -99,7 +99,7 @@ def get_hydro_hits(file):
     if len(resA) == len(resB):
         print("Lengths are equal. Proceeding to compare hydrophobicities.")
     print("-----------------------------------------------------")
-    
+
     for i in range(len(resA)):
         resnameA = get_residue_name(protein, resA[i])
         resnameB = get_residue_name(protein, resB[i])
