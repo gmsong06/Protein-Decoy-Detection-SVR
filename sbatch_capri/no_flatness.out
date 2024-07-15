@@ -1,0 +1,21 @@
+['flatness', 'DockQ', 'pdb_file', 'pdb_id']
+/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri/contacts_rsm.csv
+BEGINNING TRAINING
+DONE TRAINING
+DONE PREDICTING
+        MAE       MSE        R2
+0  0.190174  0.068317  0.296474
+                                  pdb_file  actual_DockQ  prediction
+0      complex.0_0_17_corrected_H_0001_T32         0.026    0.115753
+1      complex.0_0_23_corrected_H_0001_T32         0.024    0.122404
+2      complex.0_0_27_corrected_H_0001_T32         0.015    0.112318
+3      complex.0_0_34_corrected_H_0001_T32         0.018    0.107920
+4      complex.0_0_36_corrected_H_0001_T32         0.008    0.285924
+...                                    ...           ...         ...
+19364  complex.9752_1_corrected_H_0001_T54         0.071    0.111614
+19365  complex.9768_3_corrected_H_0001_T54         0.026    0.122804
+19366  complex.9780_3_corrected_H_0001_T54         0.067    0.124448
+19367  complex.9780_5_corrected_H_0001_T54         0.072    0.112240
+19368  complex.9964_5_corrected_H_0001_T54         0.156    0.119492
+
+[19369 rows x 3 columns]

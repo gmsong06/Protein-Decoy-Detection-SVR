@@ -11,8 +11,8 @@ parser.add_argument("--output_path", type=str, help="Path to output prediction f
 args = parser.parse_args()
 
 # Load the data
-df = pd.read_csv('final_data_groups.csv')
-df2 = pd.read_csv('capri_data.csv')
+train = pd.read_csv('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/final_data_groups.csv')
+test = pd.read_csv('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/final_data_capri_groups.csv')
 
 to_remove = args.remove
 
@@ -26,12 +26,12 @@ to_remove.append('pdb_id')
 print(to_remove)
 print(args.output_path)
 
-X_train = df.drop(columns=to_remove)
-y_train = df['DockQ']
-X_test = df2.drop(columns=to_remove)
-y_test = df2['DockQ']
-groups = df['pdb_id']
-pdb_files = df2['pdb_file']
+X_train = train.drop(columns=to_remove)
+y_train = train['DockQ']
+X_test = test.drop(columns=to_remove)
+y_test = test['DockQ']
+groups = train['pdb_id']
+pdb_files = test['pdb_file']
 
 results = []
 predictions = []
@@ -62,9 +62,9 @@ results.append({
 for pdb, actual, pred in zip(pdb_files, y_test, y_pred):
     predictions.append({'pdb_file': pdb, 'actual_DockQ': actual, 'prediction': pred})
 
-results_df = pd.DataFrame(results)
-print(results_df)
+results_train = pd.DataFrame(results)
+print(results_train)
 
-predictions_df = pd.DataFrame(predictions)
-predictions_df.to_csv(args.output_path, index=False)
-print(predictions_df)
+predictions_train = pd.DataFrame(predictions)
+predictions_train.to_csv(args.output_path, index=False)
+print(predictions_train)
