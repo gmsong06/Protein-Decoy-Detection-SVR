@@ -83,7 +83,7 @@ def process_pdb_folder(args):
     output_csv = f'{pdb_id}_hydrophobicity_contacts.csv'
     with open(output_csv, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['pdb_file', '_hydrophobicity_contacts'])
+        writer.writerow(['pdb_file', 'hydrophobicity_contacts'])
         for result in results:
             writer.writerow(result)
 
