@@ -68,6 +68,7 @@ def get_hydro_hits(prot):
 
 # Define a function to process each PDB folder
 def process_pdb_folder(args):
+    print (args)
     folder_path, pdb_id = args
     results = []
     relaxed_folder_path = os.path.join(folder_path, f"{pdb_id}_relaxed")
