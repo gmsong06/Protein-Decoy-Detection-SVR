@@ -39,7 +39,7 @@ predictions = []
 
 pipeline = Pipeline([
     ('scaler', StandardScaler()),
-    ('svr', SVR())
+    ('svr', SVR(kernel='poly'))  # Example for polynomial kernel
 ])
 
 print("BEGINNING TRAINING")
