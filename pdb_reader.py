@@ -6,6 +6,7 @@ import argparse
 import numpy as np
 from multiprocessing import Pool, cpu_count
 from collections import defaultdict
+from scipy.spatial import KDTree
 
 
 class Protein:
@@ -326,55 +327,135 @@ class Protein:
 
         return hydrophobicities
 
-    def get_residue_of_interface_atoms(self):
+
+    def contact_number(self):
         coordinates = []
+        atom_names = []
         chains = []
         residue_ids = []
 
-        # Collect data from the structure
         for model in self.structure:
             for chain in model:
-                chain_id = chain.id
                 for residue in chain:
-                    residue_id = residue.id[1]
                     for atom in residue:
-                        chains.append(chain_id)
+                        chains.append(chain.id)
+                        atom_names.append(atom.get_name())
                         coordinates.append(atom.coord)
-                        residue_ids.append(residue_id)
+                        residue_ids.append(residue.id[1])
 
-        # Separate coordinates and residue_ids by chain
-        first_chain = chains[0]
-        listA, listB = [], []
-        residue_ids_A, residue_ids_B = [], []
+        def hydrogen_list():
+            for i in range(len(atom_names)):
+                first_letter = atom_names[i][0]
+                if first_letter == "H":
+                    atom_names[i] = "hydrogen"
+                elif first_letter.isnumeric():
+                    if atom_names[i][1] == "H":
+                        atom_names[i] = "hydrogen"
+                    else:
+                        atom_names[i] == "not_hydrogen"
+                else:
+                    atom_names[i] = "not_hydrogen"
 
-        for i, chain in enumerate(chains):
-            if chain == first_chain:
-                listA.append(coordinates[i])
-                residue_ids_A.append(residue_ids[i])
-            else:
-                listB.append(coordinates[i])
-                residue_ids_B.append(residue_ids[i])
+        hydrogen_list()
 
-        # Find residues in contact
+        chain_dict = {}
+        residue_dict = {}
+
+        for i in range(len(coordinates)):
+            if chains[i] not in chain_dict:
+                chain_dict[chains[i]] = []
+            if chains[i] not in residue_dict:
+                residue_dict[chains[i]] = []
+
+            if atom_names[i] == "not_hydrogen":
+                chain_dict[chains[i]].append(coordinates[i])
+                residue_dict[chains[i]].append(residue_ids[i])
+
+        chain_ids = list(chain_dict.keys())
+        if len(chain_ids) < 2:
+            return 0
+
+        listA = np.array(chain_dict[chain_ids[0]])
+        listB = np.array(chain_dict[chain_ids[1]])
+
+        residueA = residue_dict[chain_ids[0]]
+        residueB = residue_dict[chain_ids[1]]
+
+        # Using KDTree for efficient distance calculations
+        treeA = KDTree(listA)
         dist_thresh = 5
-        res_in_contact_A, res_in_contact_B = [], []
+        res_in_contact = []
 
-        for i, posA in enumerate(listA):
-            for j, posB in enumerate(listB):
-                if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
-                    res_in_contact_A.append(residue_ids_A[i])
-                    res_in_contact_B.append(residue_ids_B[j])
+        for i, posB in enumerate(listB):
+            indices = treeA.query_ball_point(posB, dist_thresh)
+            for idx in indices:
+                cont = [residueA[idx], residueB[i]]
+                res_in_contact.append(cont)
 
-        # Combine and sort residues in contact
-        for res in res_in_contact_A:
-            all_residues_in_contact.append(res)
-        for res in res_in_contact_B:
-            all_residues_in_contact.append(res)
-        all_residues_in_contact = []
+        contacts = len(res_in_contact)
 
-        return all_residues_in_contact
 
-        
+        return contacts
+
+    def atoms_in_contact_atom_ids(self):
+        coordinates = []
+        atom_ids = []
+        atom_names = []
+        chains = []
+
+        for model in self.structure:
+            for chain in model:
+                for residue in chain:
+                    for atom in residue:
+                        chains.append(chain.id)
+                        atom_ids.append(atom.get_serial_number())  # Collect atom IDs
+                        atom_names.append(atom.get_name())
+                        coordinates.append(atom.coord)
+
+        def classify_atoms():
+            for i in range(len(atom_names)):
+                first_letter = atom_names[i][0]
+                if first_letter == "H":
+                    atom_names[i] = "hydrogen"
+                elif first_letter.isnumeric() and atom_names[i][1] == "H":
+                    atom_names[i] = "hydrogen"
+                else:
+                    atom_names[i] = "not_hydrogen"
+
+        classify_atoms()
+
+        chain_dict = defaultdict(list)
+        atom_dict = defaultdict(list)
+
+        for i in range(len(coordinates)):
+            if atom_names[i] == "not_hydrogen":
+                chain_dict[chains[i]].append(coordinates[i])
+                atom_dict[chains[i]].append(atom_ids[i])
+
+        chain_ids = list(chain_dict.keys())
+        if len(chain_ids) < 2:
+            return 0
+
+        listA = np.array(chain_dict[chain_ids[0]])
+        listB = np.array(chain_dict[chain_ids[1]])
+
+        atomsA = atom_dict[chain_ids[0]]
+        atomsB = atom_dict[chain_ids[1]]
+
+        # Using KDTree for efficient distance calculations
+        treeA = KDTree(listA)
+        dist_thresh = 5
+        atom_ids_in_contact = set()
+
+        for i, posB in enumerate(listB):
+            indices = treeA.query_ball_point(posB, dist_thresh)
+            for idx in indices:
+                atom_ids_in_contact.add(atomsA[idx])
+                atom_ids_in_contact.add(atomsB[i])
+
+        sorted_atom_ids_in_contact = sorted(atom_ids_in_contact)
+
+        return len(sorted_atom_ids_in_contact)
 
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
@@ -383,5 +464,8 @@ if __name__ == "__main__":
     #print(protein.get_interface_residues())
     #print(protein.get_interface_atom_ids())
     #print(protein.get_interface_atom_names()) 
-    print(protein.get_interface_charges())
+    #print(protein.get_interface_charges())
     #print(protein.get_hydrophobicities())
+    #print(protein.get_residue_of_interface_atoms())
+    print(protein.contact_number())
+    print(protein.atoms_in_contact_atom_ids())
