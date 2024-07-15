@@ -455,7 +455,7 @@ class Protein:
 
         sorted_atom_ids_in_contact = sorted(atom_ids_in_contact)
 
-        return len(sorted_atom_ids_in_contact)
+        return sorted_atom_ids_in_contact
 
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
