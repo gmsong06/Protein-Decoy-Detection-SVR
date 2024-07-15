@@ -326,6 +326,50 @@ class Protein:
 
         return hydrophobicities
 
+    def get_residue_of_interface_atoms(self):
+        coordinates = []
+        chains = []
+        residue_ids = []
+
+        # Collect data from the structure
+        for model in self.structure:
+            for chain in model:
+                chain_id = chain.id
+                for residue in chain:
+                    residue_id = residue.id[1]
+                    for atom in residue:
+                        chains.append(chain_id)
+                        coordinates.append(atom.coord)
+                        residue_ids.append(residue_id)
+
+        # Separate coordinates and residue_ids by chain
+        first_chain = chains[0]
+        listA, listB = [], []
+        residue_ids_A, residue_ids_B = [], []
+
+        for i, chain in enumerate(chains):
+            if chain == first_chain:
+                listA.append(coordinates[i])
+                residue_ids_A.append(residue_ids[i])
+            else:
+                listB.append(coordinates[i])
+                residue_ids_B.append(residue_ids[i])
+
+        # Find residues in contact
+        dist_thresh = 5
+        res_in_contact_A, res_in_contact_B = [], []
+
+        for i, posA in enumerate(listA):
+            for j, posB in enumerate(listB):
+                if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
+                    res_in_contact_A.add(residue_ids_A[i])
+                    res_in_contact_B.add(residue_ids_B[j])
+
+        # Combine and sort residues in contact
+        all_residues_in_contact = sorted(res_in_contact_A | res_in_contact_B)
+
+        return all_residues_in_contact
+
         
 
 if __name__ == "__main__":
