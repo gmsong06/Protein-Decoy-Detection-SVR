@@ -22,13 +22,12 @@ def get_residues_and_coords(structure):
     for model in structure:
         for chain in model:
             for residue in chain:
-                if Bio.PDB.is_aa(residue):
-                    res_id = residue.id[1]
-                    res_name = residue.resname
-                    res_coords = [atom.coord for atom in residue if atom.element != 'H']
-                    if res_coords:
-                        residues.append((chain.id, res_id, res_name))
-                        coords.append(res_coords)
+                res_id = residue.id[1]
+                res_name = residue.resname
+                res_coords = [atom.coord for atom in residue if atom.element != 'H']
+                if res_coords:
+                    residues.append((chain.id, res_id, res_name))
+                    coords.append(res_coords)
     return residues, coords
 
 # Define a function to get residue pairs in contact
