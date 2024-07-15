@@ -1,148 +1,105 @@
-from pdb_reader import Protein
-import math
+import os
 import numpy as np
 import pandas as pd
-import Bio
-from Bio.PDB import PDBParser,vectors
-from pathlib import Path
-import os
+from Bio.PDB import PDBParser
+from scipy.spatial import KDTree
+import multiprocessing as mp
 import argparse
 import csv
 
-parser = argparse.ArgumentParser()
-parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
-args = parser.parse_args()
+# Define the hydrophobicity dictionary
+hydrophobicity_dict = {
+    "ARG": 0.72002943, "ASP": 0.75367063, "GLU": 0.87591947, "LYS": 1, "ASN": 0.67819213,
+    "GLN": 0.72278272, "PRO": 0.65123555, "HIS": 0.48907553, "SER": 0.52365422, "THR": 0.47798833,
+    "GLY": 0.46477639, "TYR": 0.21646225, "ALA": 0.30953653, "CYS": 0, "MET": 0.18184843,
+    "TRP": 0.14290738, "VAL": 0.10992156, "PHE": 0.0814021, "LEU": 0.10211201, "ILE": 0.06280283
+}
 
-def get_residue_name(prot, residue_id):
-    for model in prot.structure:
+# Define a function to extract residues and their coordinates from a structure
+def get_residues_and_coords(structure):
+    residues = []
+    coords = []
+    for model in structure:
         for chain in model:
             for residue in chain:
-                if residue.id[1] == residue_id:
-                    return residue.resname
-    return None
+                if Bio.PDB.is_aa(residue):
+                    res_id = residue.id[1]
+                    res_name = residue.resname
+                    res_coords = [atom.coord for atom in residue if atom.element != 'H']
+                    if res_coords:
+                        residues.append((chain.id, res_id, res_name))
+                        coords.append(res_coords)
+    return residues, coords
 
-def get_residues(prot):
-    coordinates = []
-    atom_names = []                
-    chains = []
-    residue_ids = []
-    for model in prot.structure:
-        for chain in model:
-            for residue in chain:
-                for atom in residue:
-                    chains.append(chain.id)
-                    atom_names.append(atom.get_name())
-                    coordinates.append(atom.coord)
-                    residue_ids.append(residue.id[1])
-                   
-    def hydrogen_list():
-        for i in range(len(atom_names)):
-            first_letter = atom_names[i][0]
-            if first_letter == "H":
-                atom_names[i] = "hydrogen"
-            elif first_letter.isnumeric():
-                if atom_names[i][1] == "H":
-                    atom_names[i] = "hydrogen"
-                else:
-                    atom_names[i] == "not_hydrogen"
-            else:
-                atom_names[i] = "not_hydrogen"
-               
-    hydrogen_list()
-                   
-    listA = []
-    listB = []
-    residue_ids_A = []
-    residue_ids_B = []
-    lst = prot.get_chain_ids()
-    for i in range(len(coordinates)):
-        if ((chains[i] == lst[0]) and (atom_names[i] == "not_hydrogen")):
-            listA.append(coordinates[i])
-            residue_ids_A.append(residue_ids[i])
-        elif ((chains[i] == lst[1]) and (atom_names[i] == "not_hydrogen")):
-            listB.append(coordinates[i])
-            residue_ids_B.append(residue_ids[i])      
+# Define a function to get residue pairs in contact
+def get_contact_residues(coords_A, coords_B, residues_A, residues_B, dist_thresh=5.0):
+    kdtree_A = KDTree(np.vstack(coords_A))
+    kdtree_B = KDTree(np.vstack(coords_B))
+    contact_residues_A = set()
+    contact_residues_B = set()
+    for i, res_coords_A in enumerate(coords_A):
+        for j, res_coords_B in enumerate(coords_B):
+            if kdtree_A.query_ball_tree(kdtree_B, dist_thresh):
+                contact_residues_A.add(residues_A[i][1])
+                contact_residues_B.add(residues_B[j][1])
+    return list(contact_residues_A), list(contact_residues_B)
 
-    dist_thresh = 5
-    res_in_contact = []
-    for i,posA in enumerate(listA):
-        for j,posB in enumerate(listB):
-            if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
-                cont = [residue_ids_A[i], residue_ids_B[j]]
-                if cont not in res_in_contact:
-                    res_in_contact.append(cont)
-                   
-    return res_in_contact
-   
+# Define a function to calculate hydrophobic hits
+def get_hydro_hits(prot):
+    parser = PDBParser(QUIET=True)
+    structure = parser.get_structure(prot, prot)
+    residues, coords = get_residues_and_coords(structure)
 
-def get_hydro_hits(file):
-    
-    hydrophobicity_dict = {
-            "ARG": 0.72002943, "ASP": 0.75367063, "GLU": 0.87591947, "LYS": 1, "ASN": 0.67819213,
-            "GLN": 0.72278272, "PRO": 0.65123555, "HIS":  0.48907553, "SER": 0.52365422, "THR": 0.47798833,
-            "GLY": 0.46477639, "TYR": 0.21646225, "ALA": 0.30953653, "CYS": 0, "MET": 0.18184843,
-            "TRP":  0.14290738, "VAL": 0.10992156, "PHE": 0.0814021, "LEU": 0.10211201, "ILE": 0.06280283
-        }
-    
+    chain_A_residues = [res for res in residues if res[0] == 'A']
+    chain_B_residues = [res for res in residues if res[0] == 'B']
+    chain_A_coords = [coords[i] for i, res in enumerate(residues) if res[0] == 'A']
+    chain_B_coords = [coords[i] for i, res in enumerate(residues) if res[0] == 'B']
+
+    contacts_A, contacts_B = get_contact_residues(chain_A_coords, chain_B_coords, chain_A_residues, chain_B_residues)
+
     hits = 0
-
-    protein = Protein(file)
-    res_list = get_residues(protein)
-    resA = []
-    resB = []
-    print(len(res_list))
-    for res in res_list:
-        resA.append(res[0])
-        resB.append(res[1])
-
-    print(f"Contacts in Chain A: {len(resA)} + Contacts in Chain B: {len(resB)}")
-    if len(resA) == len(resB):
-        print("Lengths are equal. Proceeding to compare hydrophobicities.")
-    print("-----------------------------------------------------")
-    
-    for i in range(len(resA)):
-        resnameA = get_residue_name(protein, resA[i])
-        resnameB = get_residue_name(protein, resB[i])
-        print(f"Contact between {resnameA} and {resnameB}")
-        print(f"Hydrophobicities = {hydrophobicity_dict[resnameA]} and {hydrophobicity_dict[resnameB]}")
-        if abs(hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]) <= 0.3:
+    for res_id_A, res_id_B in zip(contacts_A, contacts_B):
+        res_name_A = next(res[2] for res in residues if res[1] == res_id_A and res[0] == 'A')
+        res_name_B = next(res[2] for res in residues if res[1] == res_id_B and res[0] == 'B')
+        if abs(hydrophobicity_dict[res_name_A] - hydrophobicity_dict[res_name_B]) <= 0.3:
             hits += 1
 
     return hits
 
-
-def process_pdb_folder(full_folder_path, pdb_id):
+# Define a function to process each PDB folder
+def process_pdb_folder(args):
+    folder_path, pdb_id = args
     results = []
-    relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
-    random_folder_path = os.path.join(full_folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
+    relaxed_folder_path = os.path.join(folder_path, f"{pdb_id}_relaxed")
+    random_folder_path = os.path.join(folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
 
-    paths = [relaxed_folder_path, random_folder_path]
-    for path in paths:
-        print(f"Path is {path}")
+    for path in [relaxed_folder_path, random_folder_path]:
         for filename in os.listdir(path):
-            print(f"Filename is {filename}")
             if filename.endswith('.pdb') and ("NoH" not in filename):
                 pdb_path = os.path.join(path, filename)
-                print(f"Processing {filename}")
-                results.append((filename[:-4], (get_hydro_hits(pdb_path))))
-            else:
-                print(f"File did not pass requirements.")
-    output_csv = f'{pdb_id}hydrophobicity_contacts.csv'
-    with open(output_csv, mode='w', newline='') as file:
+                hits = get_hydro_hits(pdb_path)
+                results.append((filename[:-4], hits))
 
+    output_csv = f'{pdb_id}_hydrophobicity_contacts.csv'
+    with open(output_csv, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['pdb_file', 'hydrophobicity_contacts'])
+        writer.writerow(['pdb_file', '_hydrophobicity_contacts'])
         for result in results:
             writer.writerow(result)
 
+# Main function to process all folders in parallel
 def main(folder_path):
+    tasks = []
     for folder in os.listdir(folder_path):
-        full_folder_path = os.path.join(folder_path, folder)
-        if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
-            pdb_id = full_folder_path[-4:]
-            print(f"PDB id is {pdb_id}")
-            process_pdb_folder(full_folder_path, pdb_id)
-            print("DONE----------------------------------------------------------------------")
+        if folder.startswith("sampled_") and os.path.isdir(os.path.join(folder_path, folder)):
+            pdb_id = folder.split('_')[-1]
+            tasks.append((folder_path, pdb_id))
+
+    with mp.Pool(mp.cpu_count()) as pool:
+        pool.map(process_pdb_folder, tasks)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
+    args = parser.parse_args()
     main(args.pdb_folder)
