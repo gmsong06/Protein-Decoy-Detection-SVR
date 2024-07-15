@@ -366,7 +366,11 @@ class Protein:
                     res_in_contact_B.append(residue_ids_B[j])
 
         # Combine and sort residues in contact
-        all_residues_in_contact = sorted(res_in_contact_A | res_in_contact_B)
+        for res in res_in_contact_A:
+            all_residues_in_contact.append(res)
+        for res in res_in_contact_B:
+            all_residues_in_contact.append(res)
+        all_residues_in_contact = []
 
         return all_residues_in_contact
 
