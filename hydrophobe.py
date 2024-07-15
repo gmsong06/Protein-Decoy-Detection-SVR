@@ -97,6 +97,7 @@ def main(folder_path):
             tasks.append((folder_path, pdb_id))
 
     with mp.Pool(mp.cpu_count()) as pool:
+        print(f"TASKS IS {tasks}")
         pool.map(process_pdb_folder, tasks)
 
 if __name__ == "__main__":
