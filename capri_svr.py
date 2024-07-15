@@ -11,8 +11,8 @@ parser.add_argument("--output_path", type=str, help="Path to output prediction f
 args = parser.parse_args()
 
 # Load the data
-train = pd.read_csv('final_data_groups.csv')
-test = pd.read_csv('final_data_capri_groups.csv')
+train = pd.read_csv('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/final_data_groups.csv')
+test = pd.read_csv('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/final_data_capri_groups.csv')
 
 to_remove = args.remove
 
