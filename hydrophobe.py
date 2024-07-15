@@ -93,11 +93,11 @@ def main(folder_path):
     for folder in os.listdir(folder_path):
         if folder.startswith("sampled_") and os.path.isdir(os.path.join(folder_path, folder)):
             pdb_id = folder.split('_')[-1]
-            print(f"PATH IS {os.path.join(folder_path, folder)}")
+            #print(f"PATH IS {os.path.join(folder_path, folder)}")
             tasks.append((os.path.join(folder_path, folder), pdb_id))
 
     with mp.Pool(mp.cpu_count()) as pool:
-        print(f"TASKS IS {tasks}")
+        #print(f"TASKS IS {tasks}")
         pool.map(process_pdb_folder, tasks)
 
 if __name__ == "__main__":
