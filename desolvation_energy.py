@@ -174,9 +174,8 @@ def get_electro_hits(file):
         resA.append(res[0])
         resB.append(res[1])
 
-    print(f"Contacts in Chain A: {len(resA)} + Contacts in Chain B: {len(resB)}")
     if len(resA) == len(resB):
-        print("Lengths are equal. Proceeding to compare electrostatics.")
+        print("Comparing Chain A electrostatics to Chain B")
     print("-----------------------------------------------------")
 
     for i in range(len(resA)):
