@@ -21,7 +21,7 @@ def main(folder_path):
         results = []
 
         for index, row in dockq.iterrows():
-            if dockq["pdb_id"] == pdb_id:
+            if row["pdb_id"] == pdb_id:
                 dockq_scores.append(row['DockQ'])
         for index, row in df.iterrows():
             hydro_scores.append(row['hydrophobicity_contacts'])
