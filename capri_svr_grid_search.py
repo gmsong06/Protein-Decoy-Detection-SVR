@@ -3,6 +3,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVR
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import GridSearchCV
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -36,17 +37,31 @@ pdb_files = test['pdb_file']
 results = []
 predictions = []
 
-
 pipeline = Pipeline([
     ('scaler', StandardScaler()),
-    ('svr', SVR(kernel='poly'))
+    ('svr', SVR())
 ])
 
-print("BEGINNING TRAINING")
-pipeline.fit(X_train, y_train)
-print("DONE TRAINING")
+param_grid = {
+    'svr__kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+    'svr__C': [0.1, 1, 10, 100],
+    'svr__epsilon': [0.1, 0.2, 0.5, 0.3],
+    'svr__degree': [2, 3, 4], 
+    'svr__gamma': ['scale', 'auto'] 
+}
 
-y_pred = pipeline.predict(X_test)
+grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='r2', n_jobs=-1, verbose=2)
+
+print("BEGINNING GRID SEARCH")
+grid_search.fit(X_train, y_train)
+print("DONE GRID SEARCH")
+
+print("Best parameters found: ", grid_search.best_params_)
+print("Best score achieved: ", grid_search.best_score_)
+
+# Using the best estimator to make predictions
+best_pipeline = grid_search.best_estimator_
+y_pred = best_pipeline.predict(X_test)
 print("DONE PREDICTING")
 
 mae = mean_absolute_error(y_test, y_pred)
