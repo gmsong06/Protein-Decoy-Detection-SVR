@@ -9,11 +9,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
 args = parser.parse_args()
 
-dockq = pd.read_csv("final_data_groups.csv")
+dockq = pd.read_csv("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/final_data_groups.csv")
 
 def main(folder_path):
     for file in os.listdir(folder_path): 
-        df = pd.read_csv(file)
+        file_path = os.path.join(folder_path, file)
+        df = pd.read_csv(file_path)
         pdb_id = file[:4]
         dockq_scores = []
         hydro_scores = []
