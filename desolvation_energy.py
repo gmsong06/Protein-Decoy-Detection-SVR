@@ -184,7 +184,7 @@ def get_electro_hits(file):
         resnameB = get_residue_name(protein, resB[i])
         print(f"Contact between {resnameA} and {resnameB}")
         print(f"Electrostatics = {electrostatic_dict[resnameA]} and {electrostatic_dict[resnameB]}")
-        if abs(electrostatic_dict[resnameA] - electrostatic_dict[resnameB]) <= 45:
+        if abs(electrostatic_dict[resnameA] - electrostatic_dict[resnameB]) <= 20:
             hits += 1
 
     return hits
