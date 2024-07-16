@@ -12,7 +12,7 @@ args = parser.parse_args()
 dockq = pd.read_csv("final_data_groups.csv")
 
 def main(folder_path):
-    for file in os.listdir(args.predictions_path): 
+    for file in os.listdir(folder_path): 
         df = pd.read_csv(file)
         pdb_id = file[:4]
         dockq_scores = []
@@ -36,9 +36,9 @@ def main(folder_path):
         ax.set_ylabel('DockQ', fontsize=12)
         ax.set_title(f'Spearman Correlation: {spearman_corr:.2f}', fontsize=12)
 
-        plot_filename = os.path.join("/Users/smriti/Desktop/aeop/Protein-Decoy-Detection-SVR/spearman_plots/hydro", f"{pdb_id}.png")
+        plot_filename = os.path.join("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/spearman_plots/hydro", f"{pdb_id}.png")
         plt.savefig(plot_filename)
         plt.close(fig)  # Close the figure to avoid memory issues
-
+    
 if __name__ == "__main__":
     main(args.pdb_folder)
