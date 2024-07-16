@@ -38,7 +38,7 @@ def main(folder_path):
         ax.set_ylabel('DockQ', fontsize=12)
         ax.set_title(f'Pearson Correlation: {pearson_corr:.2f}', fontsize=12)
 
-        plot_filename = os.path.join("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/pearson_plots/hydro", f"{pdb_id}.png")
+        plot_filename = os.path.join("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/spearman_plots/hydro_pearson", f"{pdb_id}.png")
         plt.savefig(plot_filename)
         plt.close(fig)  # Close the figure to avoid memory issues
     
