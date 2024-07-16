@@ -4,6 +4,7 @@ import numpy as np
 
 # Load data from CSV files
 methods = ['CAPRI_ALL', 'CAPRI_FLATNESS', 'CAPRI_RSM', 'CAPRI_CONTACTS', "CAPRI_CONTACTS_RSM"]
+# methods = ['CAPRI_ALL', "CAPRI_CONTACTS_RSM"]
 data = {}
 for method in methods:
     data[method] = pd.read_csv(f'/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/all_predictions/{method}.csv')

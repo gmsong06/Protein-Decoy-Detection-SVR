@@ -326,7 +326,6 @@ class Protein:
 
         return hydrophobicities
 
-        
 
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
