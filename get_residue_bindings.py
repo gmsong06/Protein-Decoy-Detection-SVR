@@ -10,7 +10,7 @@ args = parser.parse_args()
 def main():
     amino_acids = [
         'ALA', 'CYS', 'ASP', 'GLU', 'PHE', 'GLY', 'HIS', 'ILE', 'LYS', 'LEU',
-        'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR'
+        'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR', 'UNK'
     ]
     
     res_dict = {aa: {aa_inner: 0 for aa_inner in amino_acids} for aa in amino_acids}
@@ -33,7 +33,7 @@ def main():
                 print(f"EITHER {A} OR {B} IS NOT STANDARD")
     
     print(res_dict)
-    
+
     output_file = "residue_contacts.pkl"
     with open(output_file, 'wb') as f:
         pickle.dump(res_dict, f)
