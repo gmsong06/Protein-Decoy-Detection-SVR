@@ -16,6 +16,7 @@ def main():
     res_dict = {aa: {aa_inner: 0 for aa_inner in amino_acids} for aa in amino_acids}
 
     # print(res_dict)
+    count = 0
     for file in os.listdir(args.input_folder):
         print(f"Processing file {file}")
         protein = Protein(os.path.join(args.input_folder, file))
@@ -31,7 +32,9 @@ def main():
                 res_dict[B][A] += 1
             else:
                 print(f"EITHER {A} OR {B} IS NOT STANDARD")
-    
+        count += 1
+        if count == 10:
+            break
     print(res_dict)
 
     output_file = "residue_contacts.pkl"
