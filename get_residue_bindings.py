@@ -31,7 +31,9 @@ def main():
                 res_dict[B][A] += 1
             else:
                 print(f"EITHER {A} OR {B} IS NOT STANDARD")
- 
+    
+    print(res_dict)
+    
     output_file = "residue_contacts.pkl"
     with open(output_file, 'wb') as f:
         pickle.dump(res_dict, f)
