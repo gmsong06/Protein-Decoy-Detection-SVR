@@ -173,7 +173,7 @@ def get_electro_hits(file):
     for res in res_list:
         resA.append(res[0])
         resB.append(res[1])
-
+        
     if len(resA) == len(resB):
         print("Comparing Chain A electrostatics to Chain B")
     print("-----------------------------------------------------")
