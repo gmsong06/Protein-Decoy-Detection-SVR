@@ -5,8 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 #from scipy.stats import pearsonr, spearmanr
 
-hydro = pd.read_csv('/Users/smriti/Desktop/aeop/Protein-Decoy-Detection-SVR/hydro_spearman.csv')
-spearman_dict = pd.read_csv('/Users/smriti/Desktop/aeop/Protein-Decoy-Detection-SVR/naomi_spearman_dict.csv')
+hydro = pd.read_csv('/vast/palmer/scratch/ohern/sr2562/hydro_spearman.csv')
+spearman_dict = pd.read_csv('/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/naomi_spearman_dict.csv')
 
 result = pd.merge(hydro, spearman_dict, on='pdb', how='outer')
 
@@ -32,5 +32,5 @@ ax.set_xlabel('Spearman', fontsize=12)
 ax.set_ylabel('PDB', fontsize=12)
 ax.set_title('Spearman Correlation by Scoring Function')
 
-plt.show()
+plt.savefig("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/spearman_plots/spearman_hydro.png")
 plt.close()
