@@ -8,24 +8,24 @@ import matplotlib.pyplot as plt
 hydro = pd.read_csv('/vast/palmer/scratch/ohern/sr2562/hydro_spearman.csv')
 spearman_dict = pd.read_csv('/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/naomi_spearman_dict.csv')
 
-result = pd.merge(hydro, spearman_dict, on='pdb', how='outer')
+result = pd.merge(spearman_dict, hydro, on='pdb', how='outer')
 
-x = [] #PDB
-y = [] #HYDRO
-avg = [] #AVG SPEARMAN
+pdb = [] #PDB
+hydro_spearman = [] #HYDRO
+avg_spearman = [] #AVG SPEARMAN
 
 for i in range(84):
     i+=1
-    x.append(i)
+    pdb.append(i)
 for index, row in result.iterrows():
-    y.append(float(row['spearman_correlation'])*-1)
-    avg.append(row['avg_spearman']) 
+    hydro_spearman.append(float(row['spearman_correlation'])*(-1))
+    avg_spearman.append(row['avg_spearman']) 
 
 fig, ax = plt.subplots(dpi=150, figsize=(5, 5))
-ax.scatter(x, y, label='Hydrophbicity', color='red')
-ax.scatter(x, avg, label='Average', marker='s', color='black')
-ax.plot(x,y,color='red')
-ax.plot(x,avg,color='black')
+ax.scatter(pdb, hydro_spearman, label='Hydrophbicity', color='red')
+ax.scatter(pdb, avg_spearman, label='Average', marker='s', color='black')
+ax.plot(pdb,hydro_spearman,color='red')
+ax.plot(pdb,avg_spearman,color='black')
 ax.legend()
 ax.grid(axis = 'y')
 ax.set_xlabel('Spearman', fontsize=12)
