@@ -29,7 +29,7 @@ ax.plot(pdb,avg_spearman,color='black')
 ax.legend()
 ax.grid(axis = 'y')
 ax.set_xlabel('PDB', fontsize=12)
-ax.se_xticks(pdb)
+ax.set_xticks(pdb)
 ax.set_ylabel('Spearman', fontsize=12)
 ax.set_title('Spearman Correlation by Scoring Function')
 
