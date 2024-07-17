@@ -10,7 +10,7 @@ args = parser.parse_args()
 def main():
     amino_acids = [
         'ALA', 'CYS', 'ASP', 'GLU', 'PHE', 'GLY', 'HIS', 'ILE', 'LYS', 'LEU',
-        'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR', 'UNK'
+        'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR',
     ]
     
     res_dict = {aa: {aa_inner: 0 for aa_inner in amino_acids} for aa in amino_acids}
