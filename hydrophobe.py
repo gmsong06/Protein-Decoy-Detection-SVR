@@ -105,7 +105,7 @@ def get_hydro_hits(file):
         resnameB = get_residue_name(protein, resB[i])
         print(f"Contact between {resnameA} and {resnameB}")
         print(f"Hydrophobicities = {hydrophobicity_dict[resnameA]} and {hydrophobicity_dict[resnameB]}")
-        if abs(hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]) <= 0.3:
+        if abs(hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]) <= 0.25:
             hits += 1
 
     return hits
