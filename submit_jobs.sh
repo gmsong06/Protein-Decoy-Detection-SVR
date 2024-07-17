@@ -5,6 +5,8 @@ main_dir="/vast/palmer/scratch/ohern/sr2562"
 # Define the main folder containing subfolders to be run
 main_folder="${main_dir}/Supersampled_structures/groups"
 
+sbatch_hydro="${main_dir}/sbatch_hydro.sh"
+
 # Iterate over each subfolder in the main folder
 for subfolder in "${main_folder}"/*/; do
     # Get the subfolder name
