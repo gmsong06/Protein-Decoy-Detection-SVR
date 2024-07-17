@@ -18,7 +18,7 @@ for i in range(84):
     i+=1
     x.append(i)
 for index, row in result.iterrows():
-    y.append((row['spearman_correlation'])*-1)
+    y.append(float(row['spearman_correlation'])*-1)
     avg.append(row['avg_spearman']) 
 
 fig, ax = plt.subplots(dpi=150, figsize=(5, 5))
