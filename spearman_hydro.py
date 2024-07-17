@@ -18,8 +18,8 @@ for i in range(84):
     i+=1
     x.append(i)
 for index, row in result.iterrows():
-    y.append(row['hydro'])
-    avg.append(row['spearman_dict']) 
+    y.append((row['spearman_correlation'])*-1)
+    avg.append(row['avg_spearman']) 
 
 fig, ax = plt.subplots(dpi=150, figsize=(5, 5))
 ax.scatter(x, y, label='Hydrophbicity', color='red')
