@@ -5,6 +5,7 @@ def main(full_dir: str):
     all_contacts_dfs = []
     interface_rsm_dfs = []
     interface_flatness_dfs = []
+    hydro_dfs = []
 
     # Traverse the directory and read the CSV files
     for data_category in os.listdir(full_dir):
@@ -21,24 +22,31 @@ def main(full_dir: str):
                 elif data_csv.endswith('_interface_flatness.csv'):
                     print(f"Reading {file_path}")
                     interface_flatness_dfs.append(pd.read_csv(file_path))
+                elif data_csv.endswith('hydrophobicity_contacts.csv'):
+                    print(f"Reading {file_path}")
+                    hydro_dfs.append(pd.read_csv(file_path))
 
     # Check the lengths of the lists
     print(f"Found {len(all_contacts_dfs)} '_all_contacts.csv' files")
     print(f"Found {len(interface_rsm_dfs)} '_interface_rsm.csv' files")
     print(f"Found {len(interface_flatness_dfs)} '_interface_flatness.csv' files")
+    print(f"Found {len(hydro_dfs)} 'hydrophobicity_contacts.csv' files")
 
     combined_df = pd.DataFrame()
 
     # Merge the DataFrames
     for idx, all_contacts_df in enumerate(all_contacts_dfs):
         pdb_file = all_contacts_df['pdb_file'].iloc[0]
+        print(pdb_file)
         interface_rsm_df = next((df for df in interface_rsm_dfs if pdb_file in df['pdb_file'].values), None)
         interface_flatness_df = next((df for df in interface_flatness_dfs if pdb_file in df['pdb_file'].values), None)
+        hydro_dfs = next((df for df in hydro_dfs if pdb_file in df['pdb_file'].values), None)
         
-        if interface_rsm_df is not None and interface_flatness_df is not None:
+        print(hydro_dfs)
+        if interface_rsm_df is not None and interface_flatness_df is not None and hydro_dfs is not None:
             print(f"Merging set {idx+1}")
             try:
-                merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, interface_flatness_df, on='pdb_file'), on='pdb_file')
+                merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, interface_flatness_df, hydro_dfs, on='pdb_file'), on='pdb_file')
                 combined_df = pd.concat([combined_df, merged_df], ignore_index=True)
             except Exception as e:
                 print(f"Error merging set {idx+1}: {e}")
@@ -53,4 +61,4 @@ def main(full_dir: str):
         print("No data to combine. Please check the input files.")
 
 if __name__ == "__main__":
-    main('capri_csvs')
+    main('all_csvs')

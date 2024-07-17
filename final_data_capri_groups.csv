@@ -1,4 +1,4 @@
-pdb_file,contacts,rsm,flatness,DockQ,pdb_id
+pdb_file,all_contacts,interface_rsm,interface_flatness,DockQ,pdb_id
 complex.0_0_17_corrected_H_0001_T32,302,0.0796466651883435,0.9924136863291532,0.026,T32
 complex.0_0_23_corrected_H_0001_T32,360,0.0787877587618421,0.9869948908499768,0.024,T32
 complex.0_0_27_corrected_H_0001_T32,317,0.0739778809078453,0.9854466635702122,0.015,T32

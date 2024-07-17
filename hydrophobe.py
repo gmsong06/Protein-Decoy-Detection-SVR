@@ -127,7 +127,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 results.append((filename[:-4], (get_hydro_hits(pdb_path))))
             else:
                 print(f"File did not pass requirements.")
-    output_csv = f'{pdb_id}hydrophobicity_contacts.csv'
+    output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/{pdb_id}hydrophobicity_contacts.csv'
     with open(output_csv, mode='w', newline='') as file:
 
         writer = csv.writer(file)
