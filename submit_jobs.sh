@@ -16,7 +16,7 @@ for subfolder in "${main_folder}"/*/; do
     
     # Update the line where the python script is run
     # Replace "my_script.py" with your actual script name and "argument" with your argument pattern
-    sed -i "s|^python /vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/hydrophobe.py .*|python /vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/hydrophobe.py ${main_dir}/${subfolder_name}|" "$sbatch_file"
+    sed -i "s|^python /vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/hydrophobe.py .*|python /vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/hydrophobe.py ${main_dir}/${subfolder_name}|" "$sbatch_hydro"
 
 
     
