@@ -73,6 +73,7 @@ class Protein:
             for chain in model:
                 chain_id = chain.id
                 for residue in chain:
+                    print(residue)
                     residue_id = residue.id[1]
                     for atom in residue:
                         chains.append(chain_id)
@@ -106,6 +107,51 @@ class Protein:
         all_residues_in_contact = sorted(res_in_contact_A | res_in_contact_B)
 
         return all_residues_in_contact
+
+    def get_interface_residue_names(self):
+        coordinates = []
+        chains = []
+        residue_names = []
+
+        for model in self.structure:
+            for chain in model:
+                chain_id = chain.id
+                for residue in chain:
+                    # Only use standard residues
+                    if residue.id[0] == ' ':
+                        residue_name = residue.get_resname()
+                        for atom in residue:
+                            chains.append(chain_id)
+                            coordinates.append(atom.coord)
+                            residue_names.append(residue_name)
+        
+        if not chains:
+            return [], []
+
+        first_chain = chains[0]
+        listA, listB = [], []
+        residue_names_A, residue_names_B = [], []
+
+        for i, chain in enumerate(chains):
+            if chain == first_chain:
+                listA.append(coordinates[i])
+                residue_names_A.append(residue_names[i])
+            else:
+                listB.append(coordinates[i])
+                residue_names_B.append(residue_names[i])
+        
+        dist_thresh = 5
+        res_in_contact_A = []
+        res_in_contact_B = []
+
+        for i, posA in enumerate(listA):
+            for j, posB in enumerate(listB):
+                if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
+                    res_in_contact_A.append(residue_names_A[i])
+                    res_in_contact_B.append(residue_names_B[j])
+        
+        return res_in_contact_A, res_in_contact_B
+                
 
     def get_interface_atom_ids(self):
         # returns list of all the names of the ids of all atoms in the interface
