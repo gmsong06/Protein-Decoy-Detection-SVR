@@ -414,8 +414,12 @@ class Protein:
         res_dict = {aa: 0 for aa in amino_acids}
 
         for i in range(len(res_name_A)):
-            res_dict[res_name_A[i]] += 1
-            res_dict[res_name_B[i]] += 1
+            A = res_name_A[i]
+            B = res_name_B[i]
+
+            if A in amino_acids and B in amino_acids:
+                res_dict[res_name_A[i]] += 1
+                res_dict[res_name_B[i]] += 1
         
         return res_dict
 
