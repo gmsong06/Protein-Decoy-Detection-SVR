@@ -105,7 +105,7 @@ def get_hydro_hits(file):
         resnameB = get_residue_name(protein, resB[i])
         print(f"Contact between {resnameA} and {resnameB}")
         print(f"Hydrophobicities = {hydrophobicity_dict[resnameA]} and {hydrophobicity_dict[resnameB]}")
-        if abs(hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]) <= 0.3:
+        if abs(hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]) <= 0.4:
             hits += 1
 
     return hits
@@ -127,7 +127,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 results.append((filename[:-4], (get_hydro_hits(pdb_path))))
             else:
                 print(f"File did not pass requirements.")
-    output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/C/{pdb_id}_hydrophobicity_contacts.csv'
+    output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/D/{pdb_id}_hydrophobicity_contacts.csv'
     with open(output_csv, mode='w', newline='') as file:
 
         writer = csv.writer(file)
