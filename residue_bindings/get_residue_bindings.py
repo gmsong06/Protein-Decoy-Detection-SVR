@@ -7,6 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("input_folder", help="Folder path containing pdb files")
 args = parser.parse_args()
 
+
 def main():
     amino_acids = [
         'ALA', 'CYS', 'ASP', 'GLU', 'PHE', 'GLY', 'HIS', 'ILE', 'LYS', 'LEU',

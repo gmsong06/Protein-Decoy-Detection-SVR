@@ -6,7 +6,7 @@ import argparse
 import numpy as np
 from multiprocessing import Pool, cpu_count
 from collections import defaultdict
-
+import pandas as pd
 
 class Protein:
     def __init__(self, pdb_file_path):
@@ -372,8 +372,36 @@ class Protein:
 
         return hydrophobicities
 
+    def get_all_interface_contact_residue_names(self):
+        amino_acids = [
+            'ALA', 'CYS', 'ASP', 'GLU', 'PHE', 'GLY', 'HIS', 'ILE', 'LYS', 'LEU',
+            'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR',
+        ]
+
+        res_dict = {aa: {aa_inner: 0 for aa_inner in amino_acids} for aa in amino_acids}
+        res_name_A, res_name_B = self.get_interface_residue_names()
+
+        for i in range(len(res_name_A)):
+            A = res_name_A[i]
+            B = res_name_B[i]
+
+            if A in amino_acids and B in amino_acids:
+                res_dict[A][B] += 1
+                res_dict[B][A] += 1
+            else:
+                print(f"EITHER {A} OR {B} IS NOT STANDARD")
+        
+        return res_dict
+    
     def get_interface_binding_probabilities(self):
-        pass
+        res_dict = self.get_all_interface_contact_residue_names()
+
+        df = pd.DataFrame(res_dict)
+
+        total_bindings = df.sum(axis=1)
+        binding_probabilities = df.div(total_bindings, axis=0)
+        binding_probabilities = binding_probabilities.fillna(0)
+        return binding_probabilities
 
 
 if __name__ == "__main__":
@@ -383,5 +411,5 @@ if __name__ == "__main__":
     #print(protein.get_interface_residues())
     #print(protein.get_interface_atom_ids())
     #print(protein.get_interface_atom_names()) 
-    print(protein.get_interface_charges())
+    print(protein.get_interface_binding_probabilities())
     #print(protein.get_hydrophobicities())
