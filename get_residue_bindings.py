@@ -16,8 +16,9 @@ def main():
     res_dict = {aa: {aa_inner: 0 for aa_inner in amino_acids} for aa in amino_acids}
 
     # print(res_dict)
+    count = 1
     for file in os.listdir(args.input_folder):
-        print(f"Processing file {file}")
+        print(f"Processing file {file}, number {count}")
         protein = Protein(os.path.join(args.input_folder, file))
 
         res_name_A, res_name_B = protein.get_interface_residue_names()
@@ -31,6 +32,7 @@ def main():
                 res_dict[B][A] += 1
             else:
                 print(f"EITHER {A} OR {B} IS NOT STANDARD")
+        count += 1
     
     print(res_dict)
 
