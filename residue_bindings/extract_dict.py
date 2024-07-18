@@ -10,7 +10,7 @@ with open(input_file, 'rb') as f:
 def get_relative_freq(dict):
     total_contacts = 0
     for key, value in dict.items():
-        print(f"Amino acid is {key}")
+        # print(f"Amino acid is {key}")
         for aa in value:
             total_contacts += value[aa]
     
@@ -22,3 +22,4 @@ def get_relative_freq(dict):
     # print(total_contacts)
 
 relative_freq_dict = get_relative_freq(res_dict)
+
