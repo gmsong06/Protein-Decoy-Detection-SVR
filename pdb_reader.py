@@ -403,6 +403,21 @@ class Protein:
         binding_probabilities = binding_probabilities.fillna(0)
         return binding_probabilities
 
+    def get_residue_frequency(self):
+        amino_acids = [
+            'ALA', 'CYS', 'ASP', 'GLU', 'PHE', 'GLY', 'HIS', 'ILE', 'LYS', 'LEU',
+            'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR',
+        ]
+
+        res_name_A, res_name_B = self.get_interface_residue_names()
+
+        res_dict = {aa: 0 for aa in amino_acids}
+
+        for i in range(len(res_name_A)):
+            res_dict[res_name_A[i]] += 1
+            res_dict[res_name_B[i]] += 1
+        
+        return res_dict
 
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
@@ -411,5 +426,5 @@ if __name__ == "__main__":
     #print(protein.get_interface_residues())
     #print(protein.get_interface_atom_ids())
     #print(protein.get_interface_atom_names()) 
-    print(protein.get_interface_binding_probabilities())
+    # print(protein.get_residue_frequency())
     #print(protein.get_hydrophobicities())
