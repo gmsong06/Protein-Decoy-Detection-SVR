@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load data from CSV files
-methods = ['CAPRI_ALL', 'CAPRI_FLATNESS', 'CAPRI_RSM', 'CAPRI_CONTACTS', "CAPRI_CONTACTS_RSM"]
+methods = ['CAPRI_ALL', 'CAPRI_FLATNESS', 'CAPRI_RSM', 'CAPRI_CONTACTS', "CAPRI_CONTACTS_RSM", "CAPRI_ALL_POLY"]
 # methods = ['CAPRI_ALL', "CAPRI_CONTACTS_RSM"]
 data = {}
 for method in methods:
