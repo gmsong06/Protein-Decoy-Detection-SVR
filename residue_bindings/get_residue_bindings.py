@@ -16,11 +16,7 @@ def main():
     res_dict = {aa: {aa_inner: 0 for aa_inner in amino_acids} for aa in amino_acids}
 
     # print(res_dict)
-<<<<<<< HEAD:get_residue_bindings.py
     count = 1
-=======
-    count = 0
->>>>>>> 5108c52ae5e04255712c69b86fca24dc6af4c0ee:residue_bindings/get_residue_bindings.py
     for file in os.listdir(args.input_folder):
         print(f"Processing file {file}, number {count}")
         protein = Protein(os.path.join(args.input_folder, file))
@@ -37,12 +33,7 @@ def main():
             else:
                 print(f"EITHER {A} OR {B} IS NOT STANDARD")
         count += 1
-<<<<<<< HEAD:get_residue_bindings.py
     
-=======
-        if count == 10:
-            break
->>>>>>> 5108c52ae5e04255712c69b86fca24dc6af4c0ee:residue_bindings/get_residue_bindings.py
     print(res_dict)
 
     output_file = "residue_contacts.pkl"
