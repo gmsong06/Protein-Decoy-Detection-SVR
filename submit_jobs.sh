@@ -22,9 +22,8 @@ for subfolder in "${main_folder}"/*/; do
     echo "Processing subfolder: $subfolder_name"
 
     # Update the sbatch script with the new paths, job name, and output file
-    sed -i "s|^#SBATCH --job-name=.*|#SBATCH --job-name=E${subfolder_name}|" "$sbatch_hydro"
-    sed -i "s|^#SBATCH --output=.*|#SBATCH --output=${main_dir}/${subfolder_name}/E${subfolder_name}.out|" "$sbatch_hydro"
-    sed -i "s|^#SBATCH --error=.*|#SBATCH --error=${main_dir}/${subfolder_name}/E${subfolder_name}.err|" "$sbatch_hydro"
+    sed -i "s|^#SBATCH --job-name=.*|#SBATCH --job-name=D${subfolder_name}|" "$sbatch_hydro"
+    sed -i "s|^#SBATCH --output=.*|#SBATCH --output=${main_dir}/hydro_results/D/out_files/${subfolder_name}.out|" "$sbatch_hydro"
 
     # Update the line where the python script is run
     sed -i "s|^python /vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/hydrophobe.py .*|python /vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/hydrophobe.py ${subfolder}|" "$sbatch_hydro"
@@ -33,7 +32,6 @@ for subfolder in "${main_folder}"/*/; do
     echo "Updated sbatch file for $subfolder_name:"
     grep "^#SBATCH --job-name=" "$sbatch_hydro"
     grep "^#SBATCH --output=" "$sbatch_hydro"
-    grep "^#SBATCH --error=" "$sbatch_hydro"
     grep "^python /vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/hydrophobe.py" "$sbatch_hydro"
 
     # Submit the modified sbatch script

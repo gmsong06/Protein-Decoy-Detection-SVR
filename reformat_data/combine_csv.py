@@ -40,13 +40,13 @@ def main(full_dir: str):
         print(pdb_file)
         interface_rsm_df = next((df for df in interface_rsm_dfs if pdb_file in df['pdb_file'].values), None)
         interface_flatness_df = next((df for df in interface_flatness_dfs if pdb_file in df['pdb_file'].values), None)
-        hydro_dfs = next((df for df in hydro_dfs if pdb_file in df['pdb_file'].values), None)
+        hydro_df = next((df for df in hydro_dfs if pdb_file in df['pdb_file'].values), None)
         
         print(hydro_dfs)
-        if interface_rsm_df is not None and interface_flatness_df is not None and hydro_dfs is not None:
+        if interface_rsm_df is not None and interface_flatness_df is not None and hydro_df is not None:
             print(f"Merging set {idx+1}")
             try:
-                merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, interface_flatness_df, hydro_dfs, on='pdb_file'), on='pdb_file')
+                merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, pd.merge(interface_flatness_df, hydro_df, on='pdb_file'), on='pdb_file'), on='pdb_file')
                 combined_df = pd.concat([combined_df, merged_df], ignore_index=True)
             except Exception as e:
                 print(f"Error merging set {idx+1}: {e}")

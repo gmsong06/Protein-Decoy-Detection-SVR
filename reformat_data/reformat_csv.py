@@ -26,41 +26,29 @@ def main():
             df = pd.read_csv(csv_path)
 
             for index, value in df['pdb_file'].items():
-                if not value.endswith(f"_corrected_H_0001_{pdb_id}"):
-                    print(pdb_id)
-                    df.at[index, 'pdb_file'] = value[:-5] + "_corrected_H_0001" + "_" + pdb_id
+            #     if not value.endswith("_corrected_H_0001"):
+            #         print(pdb_id)
+            #         df.at[index, 'pdb_file'] = value + "_corrected_H_0001" + "_" + pdb_id
+            #     elif not value.endswith(f"_corrected_H_0001_{pdb_id}"):
+            #         print(pdb_id)
+            #         df.at[index, 'pdb_file'] = value + "_" + pdb_id
+                if value.startswith("relaxed_"):
+                    df.at[index, 'pdb_file'] = value + "_corrected_H_0001" + "_" + pdb_id
                 
-                if "random" in data:
-                    if value.startswith("sampled"):
-                        df.at[index, 'pdb_file'] = "random" + value[len("sampled"):].lstrip()
-                    if value.startswith("relaxed"):
-                        df.at[index, 'pdb_file'] = "random" + value[len("relaxed"):].lstrip()
+                # if "random" in data:
+                #     if value.startswith("sampled"):
+                #         df.at[index, 'pdb_file'] = "random" + value[len("sampled"):].lstrip()
+                #     if value.startswith("relaxed"):
+                #         df.at[index, 'pdb_file'] = "random" + value[len("relaxed"):].lstrip()
                 
-                if "relaxed" in data:
-                    if value.startswith("sampled"):
-                        df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
-                    if value.startswith("random"):
-                        df.at[index, 'pdb_file'] = "relaxed" + value[len("random"):].lstrip()
+                # if "relaxed" in data:
+                #     if value.startswith("sampled"):
+                #         df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
+                #     if value.startswith("random"):
+                #         df.at[index, 'pdb_file'] = "relaxed" + value[len("random"):].lstrip()
 
-           
-            df = pd.read_csv(csv_path)
-
-            print(df)
-            for index, value in df['pdb_file'].items():
-                if not value.endswith(pdb_id):
-                    df.at[index, 'pdb_file'] = value + "_" + pdb_id
-                
-                if "random" in data:
-                    if value.startswith("sampled"):
-                        df.at[index, 'pdb_file'] = "random" + value[len("sampled"):].lstrip()
-                    if value.startswith("relaxed"):
-                        df.at[index, 'pdb_file'] = "random" + value[len("relaxed"):].lstrip()
-                
-                if "relaxed" in data:
-                    if value.startswith("sampled"):
-                        df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
-                    if value.startswith("random"):
-                        df.at[index, 'pdb_file'] = "relaxed" + value[len("random"):].lstrip()
+                if value.startswith("sampled"):
+                    df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
 
             df.to_csv(csv_path, index=False)
 
