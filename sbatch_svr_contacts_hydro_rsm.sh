@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=week
-#SBATCH --job-name=hydro_svr_all
+#SBATCH --job-name=rsm_hydro_contacts
 ##SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --ntasks-per-core=1
@@ -12,7 +12,7 @@
 #SBATCH -t 168:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=gmsong1978@gmail.com
-#SBATCH --output=hydro_svr_all.out
+#SBATCH --output=rsm_hydro_contacts.out
 #SBATCH --requeue
 ##SBATCH --array=1-2
 
@@ -22,4 +22,4 @@ module load miniconda
 conda activate SVR
 
 # This command sends the tasklist to all in the array
-python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/test_svr.py --remove none --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_hydro/all.csv
+python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/test_svr.py --remove flatness --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_hydro/no_flatness.csv
