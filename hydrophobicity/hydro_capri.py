@@ -1,4 +1,4 @@
-from ..pdb_reader import Protein
+from pdb_reader import Protein
 import math
 import numpy as np
 import pandas as pd
