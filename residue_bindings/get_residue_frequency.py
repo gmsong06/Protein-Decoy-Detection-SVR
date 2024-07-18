@@ -23,8 +23,8 @@ def main():
         freq = protein.get_residue_frequency()
 
         for f in freq:
-            res_dict[f] += freq[f]
-
+            if f in amino_acids:
+                res_dict[f] += freq[f]
     
     print(res_dict)
 
