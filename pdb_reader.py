@@ -372,6 +372,9 @@ class Protein:
 
         return hydrophobicities
 
+    def get_interface_binding_probabilities(self):
+        pass
+
 
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
