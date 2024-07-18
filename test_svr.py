@@ -14,7 +14,7 @@ parser.add_argument("--output_path", type=str, help="Path to output prediction f
 args = parser.parse_args()
 
 # Load the data
-df = pd.read_csv('final_data_hydro_groups.csv')
+df = pd.read_csv('final_data_groups_hydro.csv')
 
 specific_column = 'DockQ'
 missing_in_specific_column = df[specific_column].isnull()
