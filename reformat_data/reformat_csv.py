@@ -13,9 +13,12 @@ def main():
         if data.endswith('.csv'):
             csv_path = os.path.join(args.data_folder, data)
 
+<<<<<<< HEAD
             # if capri:
             #     pdb_id = data[len("capri_"): len("capri_") + 3]
             # else:
+=======
+>>>>>>> residue_contacts
             if capri:
                 pdb_id = data[:3]
             else:
@@ -40,6 +43,7 @@ def main():
                     if value.startswith("sampled"):
                         df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
                     if value.startswith("random"):
+<<<<<<< HEAD
                         df.at[index, 'pdb_file'] = "relaxed" + value[len("random"):].lstrip()
 
            
@@ -61,6 +65,9 @@ def main():
                         df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
                     if value.startswith("random"):
                         df.at[index, 'pdb_file'] = "relaxed" + value[len("random"):].lstrip()
+=======
+                        df.at[index, 'model'] = "relaxed" + value[len("random"):].lstrip()
+>>>>>>> residue_contacts
 
             df.to_csv(csv_path, index=False)
 
