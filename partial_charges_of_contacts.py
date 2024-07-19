@@ -66,7 +66,7 @@ def get_residues(prot):
         for j, posB in enumerate(listB):
             if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
                 cont = [residue_ids_A[i], residue_ids_B[j], posA, posB, atom_indices_A[i], atom_indices_B[j]]
-                    if cont not in res_in_contact:
+                if cont not in res_in_contact:
                     res_in_contact.append(cont)
 
     return res_in_contact
