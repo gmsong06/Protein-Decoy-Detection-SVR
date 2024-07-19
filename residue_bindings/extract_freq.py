@@ -1,4 +1,5 @@
 import pickle
+import operator
 
 # Path to the pickle file
 input_file = "residue_frequencies.pkl"
@@ -21,4 +22,5 @@ def get_relative_freq(dict):
     return dict
     # print(total_contacts)
 
-print(res_dict)
+sorted_x = sorted(res_dict.items(), key=operator.itemgetter(1))
+print(sorted_x)
