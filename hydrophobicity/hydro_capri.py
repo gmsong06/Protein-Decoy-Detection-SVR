@@ -127,7 +127,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 results.append((filename[:-3], (get_hydro_hits(pdb_path))))
             else:
                 print(f"File did not pass requirements.")
-    output_csv = f'/vast/palmer/scratch/ohern/sr2562/{pdb_id}_hydrophobicity_capri.csv'
+    output_csv = f'/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_csvs/hydro/capri_{pdb_id}_hydrophobicity.csv'
     with open(output_csv, mode='w', newline='') as file:
 
         writer = csv.writer(file)
