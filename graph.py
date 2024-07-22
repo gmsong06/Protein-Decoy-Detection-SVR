@@ -2,8 +2,76 @@ import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 from Bio.PDB import PDBParser
-from residue import Residue  # Assuming your custom Residue class is defined
-from pdb_reader import Protein
+from Bio.PDB.vectors import rotaxis2m, Vector
+
+class Residue:
+    # Assuming this is a placeholder for your custom Residue class
+    def __init__(self, residue, chain):
+        self.residue = residue
+        self.chain = chain
+        self.interactions = []
+
+    def get_name(self):
+        return self.residue.get_resname()
+
+    def get_id(self):
+        return self.residue.get_id()[1]
+
+    def get_atoms(self):
+        return self.residue.get_atoms()
+
+    def add_interaction(self, other_residue):
+        self.interactions.append(other_residue)
+
+    def get_interactions(self):
+        return self.interactions
+
+class Protein:
+    def __init__(self, pdb_file):
+        parser = PDBParser(QUIET=True)
+        self.structure = parser.get_structure('protein', pdb_file)
+
+    def get_interface_residues(self):
+        coordinates = []
+        chains = []
+        residues = []
+
+        for model in self.structure:
+            for chain in model:
+                chain_id = chain.id
+                for residue in chain:
+                    if residue.id[0] == ' ':
+                        for atom in residue:
+                            chains.append(chain_id)
+                            coordinates.append(atom.coord)
+                            residues.append(residue)
+
+        if not chains:
+            return [], []
+
+        first_chain = chains[0]
+        listA, listB = [], []
+        residues_A, residues_B = [], []
+
+        for i, chain in enumerate(chains):
+            if chain == first_chain:
+                listA.append(coordinates[i])
+                residues_A.append(residues[i])
+            else:
+                listB.append(coordinates[i])
+                residues_B.append(residues[i])
+
+        dist_thresh = 5
+        res_in_contact_A = []
+        res_in_contact_B = []
+
+        for i, posA in enumerate(listA):
+            for j, posB in enumerate(listB):
+                if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
+                    res_in_contact_A.append(residues_A[i])
+                    res_in_contact_B.append(residues_B[j])
+
+        return res_in_contact_A, res_in_contact_B
 
 class Complex:
     def __init__(self, pdb_file):
@@ -60,6 +128,24 @@ class Complex:
         plt.show()
 
     @staticmethod
+    def kabsch_rmsd(P, Q):
+        """
+        Rotate matrix P unto matrix Q using Kabsch algorithm and calculate RMSD.
+        """
+        C = np.dot(np.transpose(P), Q)
+        V, S, W = np.linalg.svd(C)
+        d = (np.linalg.det(V) * np.linalg.det(W)) < 0.0
+
+        if d:
+            S[-1] = -S[-1]
+            V[:, -1] = -V[:, -1]
+
+        U = np.dot(V, W)
+        P = np.dot(P, U)
+
+        return np.sqrt(np.sum((P - Q)**2) / len(P))
+
+    @staticmethod
     def calculate_rmsd(dict1, dict2):
         common_keys = set(dict1.keys()).intersection(set(dict2.keys()))
         if not common_keys:
@@ -70,22 +156,28 @@ class Complex:
             res1_a, res1_b = dict1[key]
             res2_a, res2_b = dict2[key]
 
-            coord1_a = np.array([atom.coord for atom in res1_a])
-            coord1_b = np.array([atom.coord for atom in res1_b])
-            coord2_a = np.array([atom.coord for atom in res2_a])
-            coord2_b = np.array([atom.coord for atom in res2_b])
+            coords1_a = np.array([atom.coord for atom in res1_a.residue.get_atoms()])
+            coords1_b = np.array([atom.coord for atom in res1_b.residue.get_atoms()])
+            coords2_a = np.array([atom.coord for atom in res2_a.residue.get_atoms()])
+            coords2_b = np.array([atom.coord for atom in res2_b.residue.get_atoms()])
 
-            diff_a = coord1_a - coord2_a
-            diff_b = coord1_b - coord2_b
+            min_len = min(len(coords1_a), len(coords2_a))
+            coords1_a = coords1_a[:min_len]
+            coords2_a = coords2_a[:min_len]
 
-            rmsd_sum += np.sum(diff_a**2) + np.sum(diff_b**2)
+            min_len = min(len(coords1_b), len(coords2_b))
+            coords1_b = coords1_b[:min_len]
+            coords2_b = coords2_b[:min_len]
 
-        rmsd_value = np.sqrt(rmsd_sum / (len(common_keys) * 2))  # 2 for pairs
+            rmsd_sum += Complex.kabsch_rmsd(coords1_a, coords2_a)
+            rmsd_sum += Complex.kabsch_rmsd(coords1_b, coords2_b)
+
+        rmsd_value = rmsd_sum / (len(common_keys) * 2)  # 2 for pairs
         return rmsd_value
 
 # Example usage:
 complex1 = Complex('targets/1acb_complex_H.pdb')
-complex2 = Complex('targets/1acb_complex_H.pdb')
+complex2 = Complex('/home/as4643/palmer_scratch/Decoys/Supersampled_structures/sampled_1acb/1acb_relaxed/complex.0_13_40_corrected_H_0001.pdb')
 
 print("Interaction Dictionary for Complex 1:")
 for key, value in complex1.get_interaction_dict().items():
@@ -96,7 +188,7 @@ for key, value in complex2.get_interaction_dict().items():
     print(f"Interaction: {key} - Residue 1: {value[0].get_name()}, Residue 2: {value[1].get_name()}")
 
 # Plot interactions for Complex 1
-# complex1.plot_interactions()
+complex1.plot_interactions()
 
 # Calculate RMSD between the two interaction dictionaries
 try:
