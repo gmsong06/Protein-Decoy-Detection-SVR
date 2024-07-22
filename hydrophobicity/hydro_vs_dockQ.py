@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
 args = parser.parse_args()
 
-dockq = pd.read_csv("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/final_data_groups.csv")
+dockq = pd.read_csv("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/final_merged_data.csv")
 
 def main(folder_path):
     results = []
@@ -24,7 +24,7 @@ def main(folder_path):
             if row["pdb_id"] == pdb_id:
                 dockq_scores.append(row['DockQ'])
         for index, row in df.iterrows():
-            hydro_scores.append(row['hydrophobicity_contacts'])
+            hydro_scores.append(row['normalized_hydrophobicity_contacts'])
         
         spearman_corr, spearman_p = spearmanr(dockq_scores, hydro_scores)
         
@@ -38,7 +38,7 @@ def main(folder_path):
         ax.set_ylabel('DockQ', fontsize=12)
         ax.set_title(f'Spearman Correlation: {spearman_corr:.2f}', fontsize=12)
 
-        plot_filename = os.path.join("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/spearman_plots/hydro", f"{pdb_id}.png")
+        plot_filename = os.path.join("/vast/palmer/scratch/ohern/as4643/Protein-Decoy-Detection-SVR/spearman_plots/hydro", f"{pdb_id}.png")
         plt.savefig(plot_filename)
         plt.close(fig)  # Close the figure to avoid memory issues
 

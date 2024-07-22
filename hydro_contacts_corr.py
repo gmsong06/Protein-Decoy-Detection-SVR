@@ -4,10 +4,10 @@ import seaborn as sns
 from scipy.stats import pearsonr
 
 # Load the CSV file
-df = pd.read_csv('final_data_groups_hydro.csv')
+df = pd.read_csv('final_merged_data.csv')
 
 # Extract columns hydro and contacts
-hydro = df['hydro']
+hydro = df['norm_hydro']
 contacts = df['contacts']
 
 pearson_corr, _ = pearsonr(hydro, contacts)
