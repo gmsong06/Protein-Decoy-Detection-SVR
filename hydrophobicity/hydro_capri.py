@@ -111,7 +111,7 @@ def get_hydro_hits(file):
     total_contacts = len(resA)
     normalized_hits = hits / total_contacts if total_contacts > 0 else 0
 
-    return normalized_hits
+    return hits
 
 
 def process_pdb_folder(full_folder_path, pdb_id):

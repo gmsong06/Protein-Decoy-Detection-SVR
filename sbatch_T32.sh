@@ -9,7 +9,7 @@
 #SBATCH --mem-per-cpu=50G
 ##SBATCH --gpus=1
 ##SBATCH --constraint="p100|v100|rtx2080ti|rtx5000"
-#SBATCH -t 5:00:00
+#SBATCH -t 24:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=gmsong1978@gmail.com
 #SBATCH --output=T32.out
