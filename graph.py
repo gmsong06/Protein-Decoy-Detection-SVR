@@ -1,116 +1,106 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
+from Bio.PDB import PDBParser
+from residue import Residue  # Assuming your custom Residue class is defined
 from pdb_reader import Protein
-from residue import Residue
 
-# Assuming your custom Protein and Residue classes are defined
-# Create a Protein object
-protein = Protein('targets/1mbv_complex_H.pdb')
+class Complex:
+    def __init__(self, pdb_file):
+        self.protein = Protein(pdb_file)
+        self.res1, self.res2 = self.protein.get_interface_residues()
+        self.interaction_dict = self.create_interaction_dict()
 
-# Get interface residues
-res1, res2 = protein.get_interface_residues()
+    def create_interaction_dict(self):
+        interaction_dict = {}
+        for i in range(len(self.res1)):
+            residue_1 = Residue(self.res1[i], 1)
+            residue_2 = Residue(self.res2[i], 2)
+            residue_1.add_interaction(residue_2)
+            residue_2.add_interaction(residue_1)
+            interaction_dict[(residue_1.get_id(), residue_2.get_id())] = (residue_1, residue_2)
+        return interaction_dict
 
-res_ids = {}
-curr_ids = set()
-all_residues = []
+    def get_interaction_dict(self):
+        return self.interaction_dict
 
-# Dictionary to store interactions with residue names
-interaction_dict = {}
+    def plot_interactions(self):
+        G = nx.Graph()
+        all_residues = set()
 
-for i in range(len(res1)):
-    residue_1 = Residue(res1[i], 1)
-    residue_2 = Residue(res2[i], 2)
+        for res1, res2 in self.interaction_dict.values():
+            G.add_node(res1, label=res1.get_name(), chain=res1.chain)
+            G.add_node(res2, label=res2.get_name(), chain=res2.chain)
+            G.add_edge(res1, res2)
+            all_residues.add(res1)
+            all_residues.add(res2)
 
-    residue_1.add_interaction(residue_2)
-    residue_2.add_interaction(residue_1)
+        pos = {}
+        x_left = -3
+        x_right = 3
+        y_step = 15
+        y_left = 1
+        y_right = 1
 
-    if residue_1.get_id() not in curr_ids:
-        all_residues.append(residue_1)
-        curr_ids.add(residue_1.get_id())
+        for node in G.nodes():
+            if node.chain == 1:
+                pos[node] = (x_left, y_left)
+                y_left -= y_step
+            elif node.chain == 2:
+                pos[node] = (x_right, y_right)
+                y_right -= y_step
 
-    if residue_2.get_id() not in curr_ids:
-        all_residues.append(residue_2)
-        curr_ids.add(residue_2.get_id())
+        color_map = ['lightblue' if node.chain == 1 else 'red' for node in G.nodes()]
 
-    # Add interactions to the dictionary
-    interaction_dict[(residue_1.get_name(), residue_2.get_name())] = (
-        residue_1, residue_2
-    )
+        plt.figure(figsize=(12, 9))
+        nx.draw(G, pos, with_labels=False, node_size=700, node_color=color_map, edge_color="gray")
+        labels = nx.get_node_attributes(G, 'label')
+        nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color="black")
+        plt.title("2D Interactive Protein Residue Interaction Network with Chain Colors")
+        plt.show()
 
-interactions = []
+    @staticmethod
+    def calculate_rmsd(dict1, dict2):
+        common_keys = set(dict1.keys()).intersection(set(dict2.keys()))
+        if not common_keys:
+            raise ValueError("No common interactions found to calculate RMSD.")
 
-for residue in all_residues:
-    for other in residue.get_interactions():
-        if (residue, other) not in interactions and (other, residue) not in interactions:
-            interactions.append((residue, other))
+        rmsd_sum = 0
+        for key in common_keys:
+            res1_a, res1_b = dict1[key]
+            res2_a, res2_b = dict2[key]
 
-# Create the graph
-interactions_graph = nx.Graph()
+            coord1_a = np.array([atom.coord for atom in res1_a])
+            coord1_b = np.array([atom.coord for atom in res1_b])
+            coord2_a = np.array([atom.coord for atom in res2_a])
+            coord2_b = np.array([atom.coord for atom in res2_b])
 
-for residue in all_residues:
-    interactions_graph.add_node(residue, label=residue.get_name(), chain=residue.chain)
+            diff_a = coord1_a - coord2_a
+            diff_b = coord1_b - coord2_b
 
-# Use a set to avoid duplicate edges
-unique_interactions = set()
-for interaction in interactions:
-    sorted_interaction = tuple(sorted(interaction, key=lambda x: x.get_id()))
-    unique_interactions.add(sorted_interaction)
+            rmsd_sum += np.sum(diff_a**2) + np.sum(diff_b**2)
 
-print(len(interactions))
+        rmsd_value = np.sqrt(rmsd_sum / (len(common_keys) * 2))  # 2 for pairs
+        return rmsd_value
 
-interactions_graph.add_edges_from(interactions)
+# Example usage:
+complex1 = Complex('targets/1acb_complex_H.pdb')
+complex2 = Complex('targets/1acb_complex_H.pdb')
 
-# Extract labels and chain IDs for coloring
-labels = nx.get_node_attributes(interactions_graph, 'label')
-chain_ids = nx.get_node_attributes(interactions_graph, 'chain')
-
-# Manually set positions to separate nodes by chain
-pos = {}
-x_left = -3  # More space to the left
-x_right = 3  # More space to the right
-y_step = 15  # Increase y_step size for more vertical space
-y_left = 1
-y_right = 1
-
-for node in interactions_graph.nodes():
-    print(node.chain)
-    if node.chain == 1:
-        pos[node] = (x_left, y_left)
-        y_left -= y_step
-    elif node.chain == 2:
-        pos[node] = (x_right, y_right)
-        y_right -= y_step
-
-# Create a color map based on chain ID
-color_map = []
-for node in interactions_graph.nodes():
-    if node.chain == 1:
-        color_map.append('lightblue')
-    elif node.chain == 2:
-        color_map.append('red')
-    else:
-        color_map.append('gray')  # Default color for any other chains
-
-# Create a 2D plot
-plt.figure(figsize=(12, 9))
-
-# Plot nodes with colors based on chain ID
-nx.draw(interactions_graph, pos, with_labels=False, node_size=700, node_color=color_map, edge_color="gray")
-
-# Annotate nodes with labels
-nx.draw_networkx_labels(interactions_graph, pos, labels, font_size=12, font_color="black")
-
-# Set title
-plt.title("2D Interactive Protein Residue Interaction Network with Chain Colors")
-
-# Show plot
-plt.show()
-
-count = 1
-# Print out the interaction dictionary
-for key, value in interaction_dict.items():
-    print(count)
+print("Interaction Dictionary for Complex 1:")
+for key, value in complex1.get_interaction_dict().items():
     print(f"Interaction: {key} - Residue 1: {value[0].get_name()}, Residue 2: {value[1].get_name()}")
-    count += 1
 
-print(count)
+print("\nInteraction Dictionary for Complex 2:")
+for key, value in complex2.get_interaction_dict().items():
+    print(f"Interaction: {key} - Residue 1: {value[0].get_name()}, Residue 2: {value[1].get_name()}")
+
+# Plot interactions for Complex 1
+# complex1.plot_interactions()
+
+# Calculate RMSD between the two interaction dictionaries
+try:
+    rmsd = Complex.calculate_rmsd(complex1.get_interaction_dict(), complex2.get_interaction_dict())
+    print(f"RMSD between Complex 1 and Complex 2: {rmsd}")
+except ValueError as e:
+    print(e)
