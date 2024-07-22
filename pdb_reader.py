@@ -64,7 +64,7 @@ class Protein:
             return "Invalid chain ID"
         
     
-    def get_interface_residues(self):
+    def get_interface_residues_org(self):
         coordinates = []
         chains = []
         residue_ids = []
@@ -150,6 +150,50 @@ class Protein:
                 if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
                     res_in_contact_A.append(residue_names_A[i])
                     res_in_contact_B.append(residue_names_B[j])
+        
+        return res_in_contact_A, res_in_contact_B
+    
+
+    def get_interface_residues(self):
+        coordinates = []
+        chains = []
+        residues = []
+
+        for model in self.structure:
+            for chain in model:
+                chain_id = chain.id
+                for residue in chain:
+                    # Only use standard residues
+                    if residue.id[0] == ' ':
+                        for atom in residue:
+                            chains.append(chain_id)
+                            coordinates.append(atom.coord)
+                            residues.append(residue)
+        
+        if not chains:
+            return [], []
+
+        first_chain = chains[0]
+        listA, listB = [], []
+        residues_A, residues_B = [], []
+
+        for i, chain in enumerate(chains):
+            if chain == first_chain:
+                listA.append(coordinates[i])
+                residues_A.append(residues[i])
+            else:
+                listB.append(coordinates[i])
+                residues_B.append(residues[i])
+        
+        dist_thresh = 5
+        res_in_contact_A = []
+        res_in_contact_B = []
+
+        for i, posA in enumerate(listA):
+            for j, posB in enumerate(listB):
+                if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
+                    res_in_contact_A.append(residues_A[i])
+                    res_in_contact_B.append(residues_B[j])
         
         return res_in_contact_A, res_in_contact_B
                 
@@ -393,6 +437,32 @@ class Protein:
                 print(f"EITHER {A} OR {B} IS NOT STANDARD")
         
         return res_dict
+    
+
+    def get_all_interface_contact_residue_ids(self):
+        amino_acids = [
+            'ALA', 'CYS', 'ASP', 'GLU', 'PHE', 'GLY', 'HIS', 'ILE', 'LYS', 'LEU',
+            'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR',
+        ]
+
+        res_dict = {aa: {aa_inner: 0 for aa_inner in amino_acids} for aa in amino_acids}
+        res_name_A, res_name_B = self.get_interface_residues()
+
+        for i in range(len(res_name_A)):
+            A = res_name_A[i]
+            B = res_name_B[i]
+
+            if A in amino_acids and B in amino_acids:
+                res_dict[A][B] += 1
+                res_dict[B][A] += 1
+            else:
+                print(f"EITHER {A} OR {B} IS NOT STANDARD")
+        
+        return res_dict
+    
+
+    
+    
     
     def get_interface_binding_probabilities(self):
         res_dict = self.get_all_interface_contact_residue_names()
