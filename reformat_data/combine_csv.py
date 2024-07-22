@@ -1,69 +1,56 @@
-import argparse
-import os
 import pandas as pd
+import os
 
-parser = argparse.ArgumentParser()
-parser.add_argument("data_folder", type=str, help="Path to data folder")
-args = parser.parse_args()
+def main(full_dir: str):
+    all_contacts_dfs = []
+    interface_rsm_dfs = []
+    interface_flatness_dfs = []
 
-capri = False
+    # Traverse the directory and read the CSV files
+    for data_category in os.listdir(full_dir):
+        data_category_path = os.path.join(full_dir, data_category)
+        if os.path.isdir(data_category_path):
+            for data_csv in os.listdir(data_category_path):
+                file_path = os.path.join(data_category_path, data_csv)
+                if data_csv.endswith('_all_contacts.csv'):
+                    print(f"Reading {file_path}")
+                    all_contacts_dfs.append(pd.read_csv(file_path))
+                elif data_csv.endswith('_interface_rsm.csv'):
+                    print(f"Reading {file_path}")
+                    interface_rsm_dfs.append(pd.read_csv(file_path))
+                elif data_csv.endswith('_interface_flatness.csv'):
+                    print(f"Reading {file_path}")
+                    interface_flatness_dfs.append(pd.read_csv(file_path))
 
-def main():
-    for data in os.listdir(args.data_folder):
-        if data.endswith('.csv'):
-            csv_path = os.path.join(args.data_folder, data)
+    # Check the lengths of the lists
+    print(f"Found {len(all_contacts_dfs)} '_all_contacts.csv' files")
+    print(f"Found {len(interface_rsm_dfs)} '_interface_rsm.csv' files")
+    print(f"Found {len(interface_flatness_dfs)} '_interface_flatness.csv' files")
 
-            # if capri:
-            #     pdb_id = data[len("capri_"): len("capri_") + 3]
-            # else:
-            if capri:
-                pdb_id = data[:3]
-            else:
-                pdb_id = data[:4]
-            
-            print(pdb_id)
+    combined_df = pd.DataFrame()
 
-            df = pd.read_csv(csv_path)
+    # Merge the DataFrames
+    for idx, all_contacts_df in enumerate(all_contacts_dfs):
+        pdb_file = all_contacts_df['pdb_file'].iloc[0]
+        interface_rsm_df = next((df for df in interface_rsm_dfs if pdb_file in df['pdb_file'].values), None)
+        interface_flatness_df = next((df for df in interface_flatness_dfs if pdb_file in df['pdb_file'].values), None)
+        
+        if interface_rsm_df is not None and interface_flatness_df is not None:
+            print(f"Merging set {idx+1}")
+            try:
+                merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, interface_flatness_df, on='pdb_file'), on='pdb_file')
+                combined_df = pd.concat([combined_df, merged_df], ignore_index=True)
+            except Exception as e:
+                print(f"Error merging set {idx+1}: {e}")
+        else:
+            print(f"Skipping set {idx+1} due to missing files")
 
-            for index, value in df['pdb_file'].items():
-                if not value.endswith(f"_corrected_H_0001_{pdb_id}"):
-                    print(pdb_id)
-                    df.at[index, 'pdb_file'] = value[:-5] + "_corrected_H_0001" + "_" + pdb_id
-                
-                if "random" in data:
-                    if value.startswith("sampled"):
-                        df.at[index, 'pdb_file'] = "random" + value[len("sampled"):].lstrip()
-                    if value.startswith("relaxed"):
-                        df.at[index, 'pdb_file'] = "random" + value[len("relaxed"):].lstrip()
-                
-                if "relaxed" in data:
-                    if value.startswith("sampled"):
-                        df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
-                    if value.startswith("random"):
-                        df.at[index, 'pdb_file'] = "relaxed" + value[len("random"):].lstrip()
-
-           
-            df = pd.read_csv(csv_path)
-
-            print(df)
-            for index, value in df['pdb_file'].items():
-                if not value.endswith(pdb_id):
-                    df.at[index, 'pdb_file'] = value + "_" + pdb_id
-                
-                if "random" in data:
-                    if value.startswith("sampled"):
-                        df.at[index, 'pdb_file'] = "random" + value[len("sampled"):].lstrip()
-                    if value.startswith("relaxed"):
-                        df.at[index, 'pdb_file'] = "random" + value[len("relaxed"):].lstrip()
-                
-                if "relaxed" in data:
-                    if value.startswith("sampled"):
-                        df.at[index, 'pdb_file'] = "relaxed" + value[len("sampled"):].lstrip()
-                    if value.startswith("random"):
-                        df.at[index, 'pdb_file'] = "relaxed" + value[len("random"):].lstrip()
-
-            df.to_csv(csv_path, index=False)
-
+    # Check if combined_df is empty before saving
+    if not combined_df.empty:
+        combined_df.to_csv('combined_data.csv', index=False)
+        print("CSV files have been successfully combined into 'combined_data.csv'")
+    else:
+        print("No data to combine. Please check the input files.")
 
 if __name__ == "__main__":
-    main()
+    main('capri_csvs')
