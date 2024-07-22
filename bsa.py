@@ -21,8 +21,8 @@ def get_bsa(pdb_path: str):
 
 def process_pdb_folder(full_folder_path, pdb_id):
     results = []
-    relaxed_folder_path = os.path.join(full_folder_path, f"sampled_{pdb_id}_relaxed")
-    random_folder_path = os.path.join(full_folder_path, f"random_negatives/random_{pdb_id}_relaxed")
+    relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
+    random_folder_path = os.path.join(full_folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
 
     paths = [relaxed_folder_path, random_folder_path]
     for path in paths:
@@ -35,7 +35,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 results.append((filename[:-4], get_bsa(pdb_path)))
             else:
                 print(f"File did not pass requirements.")
-    output_csv = f'/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_csvs/bsa/capri_{pdb_id}_bsa.csv'
+    output_csv = f'/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/all_csvs/bsa/{pdb_id}_bsa.csv'
     with open(output_csv, mode='w', newline='') as file:
 
         writer = csv.writer(file)
@@ -48,7 +48,7 @@ def main(folder_path):
     for folder in os.listdir(folder_path):
         full_folder_path = os.path.join(folder_path, folder)
         if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
-            pdb_id = full_folder_path[-3:]
+            pdb_id = full_folder_path[-4:]
             print(f"PDB id is {pdb_id}")
             process_pdb_folder(full_folder_path, pdb_id)
             print("DONE----------------------------------------------------------------------")
