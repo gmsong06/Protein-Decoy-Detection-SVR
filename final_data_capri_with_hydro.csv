@@ -1,4 +1,4 @@
-pdb_file,all_contacts,interface_rsm,interface_flatness,normalized_hydrophobicity_contacts,pdb_id,DockQ
+pdb_file,contacts,rsm,flatness,hydro,pdb_id,DockQ
 complex.0_0_14_corrected_H_0001_T30,191,0.0637585481173223,0.9831758469693478,9,T30,0.03
 complex.0_0_16_corrected_H_0001_T30,247,0.0606768045956105,0.9905508181608664,12,T30,0.044
 complex.0_0_24_corrected_H_0001_T30,137,0.0442655430476876,0.9960820465545056,8,T30,0.029
