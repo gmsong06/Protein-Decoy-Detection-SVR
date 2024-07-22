@@ -5,7 +5,7 @@ from residue import Residue
 
 # Assuming your custom Protein and Residue classes are defined
 # Create a Protein object
-protein = Protein('targets/8enf_complex_H.pdb')
+protein = Protein('targets/Target30.pdb')
 
 # Get interface residues
 res1, res2 = protein.get_interface_residues()
