@@ -110,8 +110,8 @@ def get_hydro_hits(file):
 
     total_contacts = len(resA)
     normalized_hits = hits / total_contacts if total_contacts > 0 else 0
-
-    return hits
+    
+    return hits / protein.get_interface_sa()
 
 
 def process_pdb_folder(full_folder_path, pdb_id):
@@ -134,7 +134,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
     with open(output_csv, mode='w', newline='') as file:
 
         writer = csv.writer(file)
-        writer.writerow(['pdb_file', 'normalized_hydrophobicity_contacts'])
+        writer.writerow(['pdb_file', 'rsm_hydrophobicity_contacts'])
         for result in results:
             writer.writerow(result)
 

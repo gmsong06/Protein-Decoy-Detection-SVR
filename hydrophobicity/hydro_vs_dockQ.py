@@ -16,7 +16,7 @@ def main(folder_path):
     for file in os.listdir(folder_path): 
         file_path = os.path.join(folder_path, file)
         df = pd.read_csv(file_path)
-        pdb_id = file[:4]
+        pdb_id = file[6:9]
         dockq_scores = []
         hydro_scores = []
         print(pdb_id)
@@ -24,7 +24,7 @@ def main(folder_path):
             if row["pdb_id"] == pdb_id:
                 dockq_scores.append(row['DockQ'])
         for index, row in df.iterrows():
-            hydro_scores.append(row['hydrophobicity_contacts'])
+            hydro_scores.append(row['normalized_hydrophobicity_contacts'])
         
         print(dockq_scores)
         spearman_corr, spearman_p = spearmanr(dockq_scores, hydro_scores)

@@ -7,6 +7,7 @@ import numpy as np
 from multiprocessing import Pool, cpu_count
 from collections import defaultdict
 import pandas as pd
+import freesasa
 
 class Protein:
     def __init__(self, pdb_file_path):
@@ -422,9 +423,27 @@ class Protein:
                 res_dict[res_name_B[i]] += 1
         
         return res_dict
+    
+    def get_interface_sa(self):
+        def findUnboundSASA(pdb_path: str):
+            structures = freesasa.structureArray(pdb_path, {'separate-chains': True})
+            areas = []
+            for structure in structures:
+                result = freesasa.calc(structure)
+                areas.append(result.totalArea())
+            return areas
+
+        def findBoundSASA(pdb_path: str):
+            structure = freesasa.Structure(pdb_path)
+            result = freesasa.calc(structure)
+            return result.totalArea()
+
+        return sum(findUnboundSASA(self.pdb_file_path)) - findBoundSASA(self.pdb_file_path)
+
 
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
+    print(protein.get_interface_sa())
     #print(protein.get_chain_ids())
     #print(protein.get_atom_coords('E'))
     #print(protein.get_interface_residues())
