@@ -177,7 +177,7 @@ class Complex:
 
 # Example usage:
 complex1 = Complex('targets/1acb_complex_H.pdb')
-complex2 = Complex('/home/as4643/palmer_scratch/Decoys/Supersampled_structures/sampled_1acb/1acb_relaxed/complex.0_13_40_corrected_H_0001.pdb')
+complex2 = Complex('/home/as4643/palmer_scratch/Decoys/Supersampled_structures/sampled_1acb/1acb_relaxed/complex.0_9_35_corrected_H_0001.pdb')
 
 print("Interaction Dictionary for Complex 1:")
 for key, value in complex1.get_interaction_dict().items():
