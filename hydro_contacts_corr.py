@@ -4,11 +4,11 @@ import seaborn as sns
 from scipy.stats import pearsonr
 
 # Load the CSV file
-df = pd.read_csv('final_merged_data.csv')
+df = pd.read_csv('final_data_bsa_actual.csv')
 
 # Extract columns hydro and contacts
-hydro = df['norm_hydro']
-contacts = df['contacts']
+hydro = df['bsa']
+contacts = df['DockQ']
 
 pearson_corr, _ = pearsonr(hydro, contacts)
 print(f'Pearson correlation coefficient: {pearson_corr}')
