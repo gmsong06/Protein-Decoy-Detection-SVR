@@ -3,20 +3,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load data from CSV files
-methods = ['CAPRI_ALL', 'CAPRI_FLATNESS', 'CAPRI_RSM', 'CAPRI_CONTACTS', "CAPRI_CONTACTS_RSM"]
-# methods = ['CAPRI_ALL', "CAPRI_CONTACTS_RSM"]
+methods = ['LOGO_ALL', 'LOGO_FLATNESS', 'LOGO_RSM', 'LOGO_CONTACTS']
+
 data = {}
 for method in methods:
-    data[method] = pd.read_csv(f'/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/all_predictions/{method}.csv')
+    data[method] = pd.read_csv(f'/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/all_predictions/{method}.csv')
 
 # Combine data into a single DataFrame and calculate average Spearman correlation for each pdb_id
 combined_df = pd.concat([data[method].set_index('pdb_id') for method in methods], axis=1, keys=methods)
 combined_df.columns = combined_df.columns.map('_'.join)
+for method in methods:
+    combined_df[f'{method}_spearman_correlation'] *= -1  # Multiply Spearman correlations by -1
 combined_df['average_spearman'] = combined_df[[f'{method}_spearman_correlation' for method in methods]].mean(axis=1)
 combined_df['std_spearman'] = combined_df[[f'{method}_spearman_correlation' for method in methods]].std(axis=1)
 
 # Sort by average Spearman correlation
-df_sorted = combined_df.sort_values(by='average_spearman', ascending=False).reset_index()
+df_sorted = combined_df.sort_values(by='average_spearman', ascending=True).reset_index()
 
 # Create the plot
 fig, ax = plt.subplots(figsize=(14, 7))
@@ -42,12 +44,12 @@ ax.set_ylabel('Spearman')
 ax.yaxis.grid(True)
 ax.xaxis.grid(False)
 ax.legend()
-ax.set_ylim(-0.4, 1)
+ax.set_ylim(-1, .4)
 
 plt.xticks(rotation=45)
 
 # Save the plot
-plt.savefig('/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/find_spearman/spearman_correlation_plot.png')
+plt.savefig('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/find_spearman/spearman_correlation_plot_logo.png')
 
 # Show the plot
 plt.show()
