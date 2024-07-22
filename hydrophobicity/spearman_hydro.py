@@ -5,8 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 #from scipy.stats import pearsonr, spearmanr
 
-hydro = pd.read_csv('/Users/smriti/Desktop/aeop/Protein-Decoy-Detection-SVR/hydrophobicity/hydro_spearman.csv')
-spearman_dict = pd.read_csv("/Users/smriti/Desktop/aeop/Protein-Decoy-Detection-SVR/naomi_spearman_dict.csv")
+hydro = pd.read_csv('hydro_spearman.csv')
+spearman_dict = pd.read_csv("naomi_spearman_dict.csv")
 
 merge = pd.merge(spearman_dict, hydro, on='pdb', how='outer')
 
