@@ -5,7 +5,7 @@ from residue import Residue
 
 # Assuming your custom Protein and Residue classes are defined
 # Create a Protein object
-protein = Protein('targets/Target30.pdb')
+protein = Protein('targets/1mbv_complex_H.pdb')
 
 # Get interface residues
 res1, res2 = protein.get_interface_residues()
@@ -13,6 +13,9 @@ res1, res2 = protein.get_interface_residues()
 res_ids = {}
 curr_ids = set()
 all_residues = []
+
+# Dictionary to store interactions with residue names
+interaction_dict = {}
 
 for i in range(len(res1)):
     residue_1 = Residue(res1[i], 1)
@@ -28,6 +31,11 @@ for i in range(len(res1)):
     if residue_2.get_id() not in curr_ids:
         all_residues.append(residue_2)
         curr_ids.add(residue_2.get_id())
+
+    # Add interactions to the dictionary
+    interaction_dict[(residue_1.get_name(), residue_2.get_name())] = (
+        residue_1, residue_2
+    )
 
 interactions = []
 
@@ -65,19 +73,20 @@ y_left = 1
 y_right = 1
 
 for node in interactions_graph.nodes():
-    if chain_ids[node] == 1:
+    print(node.chain)
+    if node.chain == 1:
         pos[node] = (x_left, y_left)
         y_left -= y_step
-    elif chain_ids[node] == 2:
+    elif node.chain == 2:
         pos[node] = (x_right, y_right)
         y_right -= y_step
 
 # Create a color map based on chain ID
 color_map = []
 for node in interactions_graph.nodes():
-    if chain_ids[node] == 1:
+    if node.chain == 1:
         color_map.append('lightblue')
-    elif chain_ids[node] == 2:
+    elif node.chain == 2:
         color_map.append('red')
     else:
         color_map.append('gray')  # Default color for any other chains
@@ -96,3 +105,12 @@ plt.title("2D Interactive Protein Residue Interaction Network with Chain Colors"
 
 # Show plot
 plt.show()
+
+count = 1
+# Print out the interaction dictionary
+for key, value in interaction_dict.items():
+    print(count)
+    print(f"Interaction: {key} - Residue 1: {value[0].get_name()}, Residue 2: {value[1].get_name()}")
+    count += 1
+
+print(count)
