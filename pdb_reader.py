@@ -8,6 +8,9 @@ from multiprocessing import Pool, cpu_count
 from collections import defaultdict
 import pandas as pd
 import freesasa
+import matplotlib.pyplot as plt
+from residue import Residue
+import networkx as nx
 
 class Protein:
     def __init__(self, pdb_file_path):
@@ -510,7 +513,125 @@ class Protein:
 
         return sum(findUnboundSASA(self.pdb_file_path)) - findBoundSASA(self.pdb_file_path)
 
+    def get_fa(self):
+        def findUnboundSASA(pdb_path: str):
+            structures = freesasa.structureArray(pdb_path, {'separate-chains': True})
+            areas = []
+            for structure in structures:
+                result = freesasa.calc(structure)
+                areas.append(result.totalArea())
+            return areas
 
+        def findBoundSASA(pdb_path: str):
+            structure = freesasa.Structure(pdb_path)
+            result = freesasa.calc(structure)
+            return result.totalArea()
+
+        return (sum(findUnboundSASA(self.pdb_file_path)) - findBoundSASA(self.pdb_file_path)) / sum(findUnboundSASA(self.pdb_file_path))
+
+
+class Complex:
+    def __init__(self, pdb_file):
+        self.protein = Protein(pdb_file)
+        self.res1, self.res2 = self.protein.get_interface_residues()
+        self.interaction_dict = self.create_interaction_dict()
+
+    def create_interaction_dict(self):
+        interaction_dict = {}
+        for i in range(len(self.res1)):
+            residue_1 = Residue(self.res1[i], 1)
+            residue_2 = Residue(self.res2[i], 2)
+            residue_1.add_interaction(residue_2)
+            residue_2.add_interaction(residue_1)
+            interaction_dict[(residue_1.get_id(), residue_2.get_id())] = (residue_1, residue_2)
+        return interaction_dict
+
+    def get_interaction_dict(self):
+        return self.interaction_dict
+
+    def plot_interactions(self):
+        G = nx.Graph()
+        all_residues = set()
+
+        for res1, res2 in self.interaction_dict.values():
+            G.add_node(res1, label=res1.get_name(), chain=res1.chain)
+            G.add_node(res2, label=res2.get_name(), chain=res2.chain)
+            G.add_edge(res1, res2)
+            all_residues.add(res1)
+            all_residues.add(res2)
+
+        pos = {}
+        x_left = -3
+        x_right = 3
+        y_step = 15
+        y_left = 1
+        y_right = 1
+
+        for node in G.nodes():
+            if node.chain == 1:
+                pos[node] = (x_left, y_left)
+                y_left -= y_step
+            elif node.chain == 2:
+                pos[node] = (x_right, y_right)
+                y_right -= y_step
+
+        color_map = ['lightblue' if node.chain == 1 else 'red' for node in G.nodes()]
+
+        plt.figure(figsize=(12, 9))
+        nx.draw(G, pos, with_labels=False, node_size=700, node_color=color_map, edge_color="gray")
+        labels = nx.get_node_attributes(G, 'label')
+        nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color="black")
+        plt.title("2D Interactive Protein Residue Interaction Network with Chain Colors")
+        plt.show()
+
+    @staticmethod
+    def kabsch_rmsd(P, Q):
+        """
+        Rotate matrix P unto matrix Q using Kabsch algorithm and calculate RMSD.
+        """
+        C = np.dot(np.transpose(P), Q)
+        V, S, W = np.linalg.svd(C)
+        d = (np.linalg.det(V) * np.linalg.det(W)) < 0.0
+
+        if d:
+            S[-1] = -S[-1]
+            V[:, -1] = -V[:, -1]
+
+        U = np.dot(V, W)
+        P = np.dot(P, U)
+
+        return np.sqrt(np.sum((P - Q)**2) / len(P))
+
+    @staticmethod
+    def calculate_rmsd(dict1, dict2):
+        common_keys = set(dict1.keys()).intersection(set(dict2.keys()))
+        if not common_keys:
+            raise ValueError("No common interactions found to calculate RMSD.")
+
+        rmsd_sum = 0
+        for key in common_keys:
+            res1_a, res1_b = dict1[key]
+            res2_a, res2_b = dict2[key]
+
+            coords1_a = np.array([atom.coord for atom in res1_a.residue.get_atoms()])
+            coords1_b = np.array([atom.coord for atom in res1_b.residue.get_atoms()])
+            coords2_a = np.array([atom.coord for atom in res2_a.residue.get_atoms()])
+            coords2_b = np.array([atom.coord for atom in res2_b.residue.get_atoms()])
+
+            min_len = min(len(coords1_a), len(coords2_a))
+            coords1_a = coords1_a[:min_len]
+            coords2_a = coords2_a[:min_len]
+
+            min_len = min(len(coords1_b), len(coords2_b))
+            coords1_b = coords1_b[:min_len]
+            coords2_b = coords2_b[:min_len]
+
+            rmsd_sum += Complex.kabsch_rmsd(coords1_a, coords2_a)
+            rmsd_sum += Complex.kabsch_rmsd(coords1_b, coords2_b)
+
+        rmsd_value = rmsd_sum / (len(common_keys) * 2)  # 2 for pairs
+        return rmsd_value
+    
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
     print(protein.get_interface_sa())
@@ -521,3 +642,4 @@ if __name__ == "__main__":
     #print(protein.get_interface_atom_names()) 
     # print(protein.get_residue_frequency())
     #print(protein.get_hydrophobicities())
+
