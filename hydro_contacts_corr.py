@@ -4,11 +4,11 @@ import seaborn as sns
 from scipy.stats import pearsonr
 
 # Load the CSV file
-df = pd.read_csv('final_data_bsa_actual.csv')
+df = pd.read_csv('final_data_groups_hydro.csv')
 
 # Extract columns hydro and contacts
-hydro = df['bsa']
-contacts = df['DockQ']
+hydro = df['hydro']
+contacts = df['contacts']
 
 pearson_corr, _ = pearsonr(hydro, contacts)
 print(f'Pearson correlation coefficient: {pearson_corr}')
@@ -23,4 +23,4 @@ plt.ylabel('Contacts')
 plt.title('Hydrophobicity vs Contacts')
 
 # Show the plot
-plt.show()
+plt.savefig('hydro_contacts.png')

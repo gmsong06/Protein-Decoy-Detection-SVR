@@ -1,1 +1,4 @@
-python: can't open file '/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr_rfe.py': [Errno 2] No such file or directory
+Series([], Name: pdb_file, dtype: object)
+['DockQ', 'pdb_file', 'pdb_id']
+/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri_rfe/all.csv
+BEGINNING TRAINING

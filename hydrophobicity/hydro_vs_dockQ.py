@@ -24,7 +24,7 @@ def main(folder_path):
             if row["pdb_id"] == pdb_id:
                 dockq_scores.append(row['DockQ'])
         for index, row in df.iterrows():
-            hydro_scores.append(row['normalized_hydrophobicity_contacts'])
+            hydro_scores.append(row['rsm_hydrophobicity_contacts'])
         
         print(dockq_scores)
         spearman_corr, spearman_p = spearmanr(dockq_scores, hydro_scores)
@@ -39,12 +39,12 @@ def main(folder_path):
         ax.set_ylabel('DockQ', fontsize=12)
         ax.set_title(f'Spearman Correlation: {spearman_corr:.2f}', fontsize=12)
 
-        plot_filename = os.path.join("spearman_plots/hydro", f"{pdb_id}.png")
+        plot_filename = os.path.join("spearman_plots/hydro", f"rsm_{pdb_id}.png")
         plt.savefig(plot_filename)
         plt.close(fig)  # Close the figure to avoid memory issues
 
     results_df = pd.DataFrame(results)
-    results_df.to_csv('hydro_spearman_capri.csv', index=False)
+    results_df.to_csv('hydro_spearman_capri_rsm.csv', index=False)
     
 if __name__ == "__main__":
     main(args.pdb_folder)

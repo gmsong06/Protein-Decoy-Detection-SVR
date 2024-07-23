@@ -1,0 +1,22 @@
+Series([], Name: pdb_file, dtype: object)
+['DockQ', 'pdb_file', 'pdb_id']
+/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri/all.csv
+BEGINNING TRAINING
+DONE TRAINING
+DONE PREDICTING
+        MAE       MSE        R2
+0  0.227731  0.104151 -0.068297
+                                  pdb_file  actual_DockQ  prediction
+0      complex.0_0_14_corrected_H_0001_T30         0.030    0.129820
+1      complex.0_0_16_corrected_H_0001_T30         0.044    0.128524
+2      complex.0_0_24_corrected_H_0001_T30         0.029    0.117718
+3      complex.0_0_25_corrected_H_0001_T30         0.048    0.119629
+4      complex.0_0_31_corrected_H_0001_T30         0.043    0.134133
+...                                    ...           ...         ...
+21301  complex.9752_1_corrected_H_0001_T54         0.071    0.129384
+21302  complex.9768_3_corrected_H_0001_T54         0.026    0.138295
+21303  complex.9780_3_corrected_H_0001_T54         0.067    0.133475
+21304  complex.9780_5_corrected_H_0001_T54         0.072    0.132775
+21305  complex.9964_5_corrected_H_0001_T54         0.156    0.136261
+
+[21306 rows x 3 columns]
