@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pandas as pd
 import Bio
-from Bio.PDB import PDBParser,vectors
+from Bio.PDB import PDBParser, vectors
 from pathlib import Path
 import os
 import argparse
@@ -44,7 +44,7 @@ def get_residues(prot):
                 if atom_names[i][1] == "H":
                     atom_names[i] = "hydrogen"
                 else:
-                    atom_names[i] == "not_hydrogen"
+                    atom_names[i] = "not_hydrogen"
             else:
                 atom_names[i] = "not_hydrogen"
 
@@ -65,8 +65,8 @@ def get_residues(prot):
 
     dist_thresh = 5
     res_in_contact = []
-    for i,posA in enumerate(listA):
-        for j,posB in enumerate(listB):
+    for i, posA in enumerate(listA):
+        for j, posB in enumerate(listB):
             if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
                 cont = [residue_ids_A[i], residue_ids_B[j]]
                 if cont not in res_in_contact:
@@ -108,7 +108,10 @@ def get_hydro_hits(file):
         if abs(hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]) <= 0.2:
             hits += 1
 
-    return hits
+    total_contacts = len(resA)
+    normalized_hits = hits / total_contacts if total_contacts > 0 else 0
+    
+    return hits / protein.get_interface_sa()
 
 
 def process_pdb_folder(full_folder_path, pdb_id):
@@ -124,16 +127,17 @@ def process_pdb_folder(full_folder_path, pdb_id):
             if filename.endswith('.pdb') and ("NoH" not in filename):
                 pdb_path = os.path.join(path, filename)
                 print(f"Processing {filename}")
-                results.append((filename[:-3], (get_hydro_hits(pdb_path))))
+                results.append((filename[:-4], get_hydro_hits(pdb_path)))
             else:
                 print(f"File did not pass requirements.")
-    output_csv = f'/vast/palmer/scratch/ohern/sr2562/{pdb_id}_hydrophobicity_capri.csv'
+    output_csv = f'/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_csvs/hydro/capri_{pdb_id}_hydrophobicity.csv'
     with open(output_csv, mode='w', newline='') as file:
 
         writer = csv.writer(file)
-        writer.writerow(['pdb_file', 'hydrophobicity_contacts'])
+        writer.writerow(['pdb_file', 'rsm_hydrophobicity_contacts'])
         for result in results:
             writer.writerow(result)
+
 
 def main(folder_path):
     for folder in os.listdir(folder_path):
@@ -143,6 +147,7 @@ def main(folder_path):
             print(f"PDB id is {pdb_id}")
             process_pdb_folder(full_folder_path, pdb_id)
             print("DONE----------------------------------------------------------------------")
+
 
 if __name__ == "__main__":
     main(args.pdb_folder)

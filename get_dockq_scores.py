@@ -81,14 +81,14 @@ def main():
                 type = "relaxed"
 
             if type == "relaxed":
-                model_path = f"/home/as4643/palmer_scratch/Capri_SuperSampled/sampled_{pdb_id}/sampled_{pdb_id}_relaxed/{file_name}.pdb"
+                model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/sampled_{pdb_id}_relaxed/{file_name}.pdb"
             else:
-                model_path = f"/home/as4643/palmer_scratch/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name}.pdb"
+                model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name}.pdb"
         elif file_name.startswith("random"):
             print(file_name)
-            model_path = f"/home/as4643/palmer_scratch/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name}.pdb"
+            model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name}.pdb"
         
-        native = load_PDB(f"/home/as4643/palmer_scratch/Capri_SuperSampled/targets/Target{pdb_id[-2:]}.pdb")
+        native = load_PDB(f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/targets/Target{pdb_id[-2:]}.pdb")
         print(pdb_id[-2:])
         model = load_PDB(model_path)
 

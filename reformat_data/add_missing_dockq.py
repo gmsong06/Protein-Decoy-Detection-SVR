@@ -24,7 +24,7 @@ def fill_missing_values(file_path_full_data, folder_path_missing_values):
             missing_values = pd.read_csv(file_path)
             
             # Update the dictionary with values from the current file
-            missing_dict.update(dict(zip(missing_values['model'], missing_values['dockQ'])))
+            missing_dict.update(dict(zip(missing_values['Decoy'], missing_values['DockQ'])))
 
     # Loop through the rows in full_data and fill missing 'DockQ' values
     for index, row in full_data.iterrows():
@@ -32,8 +32,6 @@ def fill_missing_values(file_path_full_data, folder_path_missing_values):
         if pd.isna(row['DockQ']):
             pdb_file = row['pdb_file']
 
-            if pdb_file == "complex.9_9_34_corrected_H_0001_T54":
-                print(True)
             if pdb_file in missing_dict:
                 # print(missing_dict)
                 full_data.at[index, 'DockQ'] = missing_dict[pdb_file]
@@ -43,5 +41,5 @@ def fill_missing_values(file_path_full_data, folder_path_missing_values):
 
 if __name__ == "__main__":
     data = fill_missing_values(args.full_data, args.missing_values)
-    data.to_csv('final_data_capri.csv', index=False)
+    data.to_csv('final_data_capri_with_hydro.csv', index=False)
     print("Added to csv")

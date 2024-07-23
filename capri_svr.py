@@ -11,8 +11,20 @@ parser.add_argument("--output_path", type=str, help="Path to output prediction f
 args = parser.parse_args()
 
 # Load the data
-train = pd.read_csv('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/final_data_groups.csv')
-test = pd.read_csv('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/final_data_capri_groups.csv')
+train = pd.read_csv('final_data_groups_hydro.csv')
+test = pd.read_csv('final_data_capri_with_hydro.csv')
+
+specific_column = 'DockQ'
+missing_in_specific_column = test[specific_column].isnull()
+
+# Extracting the 'pdb_file' values where 'DockQ' is missing
+missing_pdb_files = test[missing_in_specific_column]['pdb_file']
+
+# Printing the missing 'pdb_file' values
+print(missing_pdb_files)
+
+# Saving the missing 'pdb_file' values to a text file
+missing_pdb_files.to_csv('missing_pdb_files.txt', index=False, header=False)
 
 to_remove = args.remove
 

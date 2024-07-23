@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("data_folder", type=str, help="Path to data folder")
 args = parser.parse_args()
 
-capri = False
+capri = True
 
 def main():
     for data in os.listdir(args.data_folder):
@@ -17,7 +17,7 @@ def main():
             #     pdb_id = data[len("capri_"): len("capri_") + 3]
             # else:
             if capri:
-                pdb_id = data[:3]
+                pdb_id = data[6:9]
             else:
                 pdb_id = data[:4]
             
