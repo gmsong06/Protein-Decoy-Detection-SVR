@@ -90,7 +90,7 @@ for file in os.listdir(path):
 
     rmsd = calculate_rmsd(correct_dict, other_dict)
 
-    pdb_file = file[-]
+    pdb_file = file[-4:]
     print()
 
 
