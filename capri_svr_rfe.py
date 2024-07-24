@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
-from sklearn.svm import SVR
+from sklearn.svm import SVR, LinearSVR
 from sklearn.feature_selection import RFE
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import argparse
@@ -49,9 +49,10 @@ pdb_files = test['pdb_file']
 results = []
 predictions = []
 
-# Integrating RFE with SVR in the pipeline
-svr = SVR(kernel='poly')
-rfe = RFE(estimator=svr, n_features_to_select=2)  # Adjust n_features_to_select as needed
+# Using LinearSVR for RFE and SVR for prediction
+linear_svr = LinearSVR(max_iter=10000)
+svr = SVR(kernel='rbf')
+rfe = RFE(estimator=linear_svr, n_features_to_select=2)  # Adjust n_features_to_select as needed
 
 pipeline = Pipeline([
     ('scaler', StandardScaler()),
@@ -70,7 +71,7 @@ print("Feature ranking:", feature_ranking)
 # Save the feature rankings
 feature_names = X_train.columns
 ranking_df = pd.DataFrame({'Feature': feature_names, 'Ranking': feature_ranking})
-ranking_df.to_csv('feature_ranking.csv', index=False)
+ranking_df.to_csv('feature_ranking_rbf.csv', index=False)
 print(ranking_df)
 
 y_pred = pipeline.predict(X_test)

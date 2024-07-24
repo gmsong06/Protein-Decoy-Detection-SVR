@@ -18,9 +18,8 @@ def main():
         full_path = os.path.join(args.predictions_path, file)
 
         extracted_string = file[:-4]
-
         df = pd.read_csv(full_path)
-        df['pdb_id'] = df['pdb_file'].str[-4:]
+        df['pdb_id'] = df['pdb_file'].str[-3:]
         dockq = df["actual_DockQ"]
         pred = df["prediction"]
 
@@ -46,19 +45,27 @@ def main():
             # Append results to the list
             results.append({'pdb_id': pdb_id, 'spearman_correlation': spearman_corr})
 
+            # Create output directory if it doesn't exist
+            output_dir = os.path.join(args.output_path, extracted_string)
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+
             fig, ax = plt.subplots(dpi=150, figsize=(5, 5))
             ax.scatter(pred_scores, dockq_scores, edgecolor='black', color='none')
 
             ax.set_xlabel('Predicted DockQ', fontsize=12)
             ax.set_ylabel('DockQ', fontsize=12)
             ax.set_title(f'Spearman Correlation: {spearman_corr:.2f}', fontsize=12)
-
-            fig.savefig(f'{args.output_path}/{extracted_string}/{pdb_id}.png')
+            
+            fig.savefig(os.path.join(output_dir, f'{pdb_id}.png'))
             plt.close(fig)  # Close the figure to avoid memory issues
 
         # Convert results to DataFrame and save to CSV
         results_df = pd.DataFrame(results)
-        results_df.to_csv(f'{args.output_csv_path}/{extracted_string}.csv', index=False)
+        output_csv_dir = os.path.join(args.output_csv_path)
+        if not os.path.exists(output_csv_dir):
+            os.makedirs(output_csv_dir)
+        results_df.to_csv(os.path.join(output_csv_dir, f'{extracted_string}.csv'), index=False)
 
 if __name__ == "__main__":
     main()
