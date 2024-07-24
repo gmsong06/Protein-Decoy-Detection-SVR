@@ -18,9 +18,8 @@ def main():
         full_path = os.path.join(args.predictions_path, file)
 
         extracted_string = file[:-4]
-
         df = pd.read_csv(full_path)
-        df['pdb_id'] = df['pdb_file'].str[-4:]
+        df['pdb_id'] = df['pdb_file'].str[-3:]
         dockq = df["actual_DockQ"]
         pred = df["prediction"]
 
