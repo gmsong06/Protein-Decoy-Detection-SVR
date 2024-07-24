@@ -1,0 +1,5 @@
+CREATED LOG FILE
+Missing pdb_file values:
+Series([], )
+Features to remove: ['DockQ', 'pdb_file', 'pdb_id']
+Output path: /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri_grid_search/0.1_100.csv

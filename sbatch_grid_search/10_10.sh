@@ -22,4 +22,4 @@ module load miniconda
 conda activate SVR
 
 # This command sends the tasklist to all in the array
-python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr_manual_tune.py --remove none --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri_grid_search/zero_zero.csv --gamma 0.001 --c 0.001 --fig_output_name zero_zero
+python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr_manual_tune.py --remove none --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri_grid_search/10_10.csv --gamma 10 --c 10 --fig_output_name 10_10

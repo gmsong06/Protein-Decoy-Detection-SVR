@@ -39,7 +39,7 @@ fi
 
 if [ "$SUBMIT" == "y" ]; then
     # Execute sbatch command on the copied file
-    cd "/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR"
+    cd "/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/sbatch_grid_search"
 
     sbatch "$NEW_NAME"
 
