@@ -6,12 +6,17 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import argparse
 import matplotlib.pyplot as plt
 
+# Define the argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument("--remove", nargs='+', type=str, help="Features to remove")
 parser.add_argument("--output_path", type=str, help="Path to output prediction file")
 parser.add_argument("--gamma", type=float, help="Gamma hyperparameter")
 parser.add_argument("--c", type=float, help="C hyperparameter")
+parser.add_argument("--fig_output_name", type=str, help="Name of figure output file")
 args = parser.parse_args()
+
+# Open a file to store print statements
+log_file = open(f'{args.fig_output_name}.txt', 'w')
 
 # Load the data
 train = pd.read_csv('final_data_groups_hydro.csv')
@@ -23,8 +28,10 @@ missing_in_specific_column = test[specific_column].isnull()
 # Extracting the 'pdb_file' values where 'DockQ' is missing
 missing_pdb_files = test[missing_in_specific_column]['pdb_file']
 
-# Printing the missing 'pdb_file' values
-print(missing_pdb_files)
+# Logging the missing 'pdb_file' values
+log_file.write("Missing pdb_file values:\n")
+log_file.write(missing_pdb_files.to_string(index=False))
+log_file.write("\n")
 
 # Saving the missing 'pdb_file' values to a text file
 missing_pdb_files.to_csv('missing_pdb_files.txt', index=False, header=False)
@@ -38,8 +45,8 @@ to_remove.append('DockQ')
 to_remove.append('pdb_file')
 to_remove.append('pdb_id')
 
-print(to_remove)
-print(args.output_path)
+log_file.write(f"Features to remove: {to_remove}\n")
+log_file.write(f"Output path: {args.output_path}\n")
 
 X_train = train.drop(columns=to_remove)
 y_train = train['DockQ']
@@ -67,7 +74,7 @@ r2_train = r2_score(y_train, y_train_pred)
 
 # Evaluate on test set
 y_pred = pipeline.predict(X_test)
-print("DONE PREDICTING")
+log_file.write("DONE PREDICTING\n")
 
 mae_test = mean_absolute_error(y_test, y_pred)
 mse_test = mean_squared_error(y_test, y_pred)
@@ -88,11 +95,13 @@ for pdb, actual, pred in zip(pdb_files, y_test, y_pred):
     predictions.append({'pdb_file': pdb, 'actual_DockQ': actual, 'prediction': pred})
 
 results_train = pd.DataFrame(results)
-print(results_train)
+log_file.write(results_train.to_string(index=False))
+log_file.write("\n")
 
 predictions_train = pd.DataFrame(predictions)
 predictions_train.to_csv(args.output_path, index=False)
-print(predictions_train)
+log_file.write(predictions_train.to_string(index=False))
+log_file.write("\n")
 
 # Visualization
 plt.figure(figsize=(14, 6))
@@ -114,4 +123,7 @@ plt.ylabel('Predicted DockQ')
 plt.title('Test Set')
 
 plt.tight_layout()
-plt.savefig('visualization.png')
+plt.savefig(f"{args.fig_output_name}.png")
+
+# Close the log file
+log_file.close()
