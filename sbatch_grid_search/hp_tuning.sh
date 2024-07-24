@@ -28,7 +28,7 @@ else
     exit 1
 fi
 
-echo "python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr_manual_tune.py --remove none --output_file ${FULL_OUTPUT_FILE} --gamma ${GAMMA} --c ${C} --fig_output_name ${FIG_LOG_NAME}" >> "${NEW_NAME}"
+echo "python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr_manual_tune.py --remove none --output_path ${FULL_OUTPUT_FILE} --gamma ${GAMMA} --c ${C} --fig_output_name ${FIG_LOG_NAME}" >> "${NEW_NAME}"
 
 if [ $? -eq 0 ]; then
     echo "Line added to file: $NEW_NAME"

@@ -18,9 +18,11 @@ args = parser.parse_args()
 # Open a file to store print statements
 log_file = open(f'{args.fig_output_name}.txt', 'w')
 
+log_file.write("CREATED LOG FILE\n")
+
 # Load the data
-train = pd.read_csv('final_data_groups_hydro.csv')
-test = pd.read_csv('final_data_capri_with_hydro.csv')
+train = pd.read_csv('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/final_data_groups_hydro.csv')
+test = pd.read_csv('/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/final_data_capri_with_hydro.csv')
 
 specific_column = 'DockQ'
 missing_in_specific_column = test[specific_column].isnull()

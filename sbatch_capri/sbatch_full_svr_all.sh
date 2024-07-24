@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-core=1
 #SBATCH -c 2
 #SBATCH -Q
-#SBATCH --mem-per-cpu=10G
+#SBATCH --mem-per-cpu=30G
 #SBATCH --gpus=1
 #SBATCH --constraint="p100|v100|rtx2080ti|rtx5000"
 #SBATCH -t 24:00:00
@@ -22,4 +22,4 @@ module load miniconda
 conda activate SVR
 
 # This command sends the tasklist to all in the array
-python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr.py --remove none --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri/all.csv
+python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr.py --remove none --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_hp_tuning/check_overfitting.csv
