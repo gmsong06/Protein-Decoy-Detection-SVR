@@ -3,16 +3,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load data from CSV files
-# methods = ['CAPRI_C_R_F', '0.001_0.01', '0.001_0.001', '0.1_10', '0.001_10', '0.001_100']
+methods = ['CAPRI_C_R_F', '0.01_0.1']
 
-methods = ['CAPRI_C_R_F']
+# methods = ['CAPRI_C_R_F']
 
-gamma = [0.001, 0.01, 0.1, 1, 10, 100]
-c = [0.001, 0.01, 0.1, 1, 10, 100]
+# gamma = [0.001, 0.01, 0.1, 1, 10, 100]
+# c = [0.001, 0.01, 0.1, 1, 10, 100]
 
-for i in range(len(gamma)):
-    for j in range(len(gamma)):
-        methods.append(f"{gamma[i]}_{c[j]}")
+# for i in range(len(gamma)):
+#     for j in range(len(gamma)):
+#         methods.append(f"{gamma[i]}_{c[j]}")
 
 data = {}
 for method in methods:
@@ -58,7 +58,7 @@ ax.set_ylim(-1, .4)
 plt.xticks(rotation=45)
 
 # Save the plot
-plt.savefig('find_spearman/spearman_correlation_plot_logo.png')
+plt.savefig('find_spearman/spearman_correlation_plot_capri.png')
 
 # Show the plot
 plt.show()
