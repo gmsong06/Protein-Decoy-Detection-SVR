@@ -17,7 +17,7 @@ def process_hdf5_file(hdf5_filepath):
             "TRP":  0.14290738, "VAL": 0.10992156, "PHE": 0.0814021, "LEU": 0.10211201, "ILE": 0.06280283
         }
     
-    with h5py.File(hdf5_filepath, 'r') as hdf5_file:
+    with h5py.File(hdf5_filepath, 'r') as f:
         pdb_ids = list(f.keys())
         for pdb_id in pdb_ids:
             results = []
@@ -25,9 +25,9 @@ def process_hdf5_file(hdf5_filepath):
             for model in models:
                 res_contacts = f[f"{pdb_id}/{model}/res_contacts"][:]
                 lst = []
+                decoded_contacts = [[resA.decode('utf-8'), resB.decode('utf-8')] for resA, resB in res_contacts]
 
-                for contact in res_contacts:
-                    resnameA, resnameB = contact
+                for resnameA, resnameB in decoded_contacts:
                     # print(f"Contact between {resnameA} and {resnameB}")
                     # print(f"Hydrophobicities = {hydrophobicity_dict[resnameA]} and {hydrophobicity_dict[resnameB]}")
                     fx = abs((hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]))
@@ -38,7 +38,7 @@ def process_hdf5_file(hdf5_filepath):
                 for item in lst:
                     my_sum += (item - fx_mean)**2
             
-                results.append(model[:-4], fx_mean, len(lst), math.sqrt((my_sum/(len(lst)-1))))
+                results.append([model[:-4], fx_mean, len(lst), math.sqrt((my_sum/(len(lst)-1)))])
 
         output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/SD/{pdb_id}_hydrophobicity_fnc.csv'
         with open(output_csv, mode='w', newline='') as file:
