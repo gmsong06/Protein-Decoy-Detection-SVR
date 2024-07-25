@@ -347,10 +347,12 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 graphA, graphB, hydroA, hydroB = create_graph(prot)
 
                 final_island_data = get_final_island_data(graphA, hydroA)
+                
+                score = score_fnc(final_island_data)
 
-                print(f"Final island data: {final_island_data}")
+                print(f"Final island data: {score}")
 
-                results.append((filename[:-4], final_island_data))
+                results.append((filename[:-4], score))
             else:
                 print(f"File did not pass requirements.")
         print()
