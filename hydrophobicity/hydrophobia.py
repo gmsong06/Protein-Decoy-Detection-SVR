@@ -5,6 +5,7 @@ import os
 import argparse
 import csv
 from collections import deque, defaultdict
+import math
 
 parser = argparse.ArgumentParser()
 parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
@@ -18,6 +19,7 @@ def get_residue_name(protein, residue_id):
                 if residue.id[1] == residue_id:
                     return residue.resname
     return None
+
 
 def external_contacts(protein):
     coordinates = []
@@ -50,7 +52,7 @@ def external_contacts(protein):
     hydrogen_list()
 
     dist_thresh = 5  # Distance threshold for contacts
-    
+
     listA = []
     listB = []
     residue_ids_A = []
@@ -62,27 +64,27 @@ def external_contacts(protein):
             residue_ids_A.append(residue_ids[i])
         elif ((chains[i] == lst[1]) and (atom_names[i] == "not_hydrogen")):
             listB.append(coordinates[i])
-            residue_ids_B.append(residue_ids[i])      
+            residue_ids_B.append(residue_ids[i])
 
     res_in_contact = []
-    
-    for i,posA in enumerate(listA):
-        for j,posB in enumerate(listB):
+
+    for i, posA in enumerate(listA):
+        for j, posB in enumerate(listB):
             if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
                 cont = [residue_ids_A[i], residue_ids_B[j]]
                 if cont not in res_in_contact:
                     res_in_contact.append(cont)
-    
+
     return listA, listB, residue_ids_A, residue_ids_B, res_in_contact
 
-def get_hydro_hits(protein):
 
+def get_hydro_hits(protein):
     hydrophobicity_dict = {
-            "ARG": 0.72002943, "ASP": 0.75367063, "GLU": 0.87591947, "LYS": 1, "ASN": 0.67819213,
-            "GLN": 0.72278272, "PRO": 0.65123555, "HIS":  0.48907553, "SER": 0.52365422, "THR": 0.47798833,
-            "GLY": 0.46477639, "TYR": 0.21646225, "ALA": 0.30953653, "CYS": 0, "MET": 0.18184843,
-            "TRP":  0.14290738, "VAL": 0.10992156, "PHE": 0.0814021, "LEU": 0.10211201, "ILE": 0.06280283
-        }
+        "ARG": 0.72002943, "ASP": 0.75367063, "GLU": 0.87591947, "LYS": 1, "ASN": 0.67819213,
+        "GLN": 0.72278272, "PRO": 0.65123555, "HIS": 0.48907553, "SER": 0.52365422, "THR": 0.47798833,
+        "GLY": 0.46477639, "TYR": 0.21646225, "ALA": 0.30953653, "CYS": 0, "MET": 0.18184843,
+        "TRP": 0.14290738, "VAL": 0.10992156, "PHE": 0.0814021, "LEU": 0.10211201, "ILE": 0.06280283
+    }
 
     hitsA = []
     hitsB = []
@@ -98,53 +100,54 @@ def get_hydro_hits(protein):
         resnameA = get_residue_name(protein, resA[i])
     for i in range(len(resB)):
         resnameB = get_residue_name(protein, resB[i])
-        
+
         if abs(hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]) <= 0.2:
             hitsA.append(resA[i])
             hitsB.append(resB[i])
 
-
     return hitsA, hitsB
+
 
 def internal_contacts(protein):
     listA, listB, resA, resB, res_list = external_contacts(protein)
-    
+
     lstA = {}
     lstB = {}
-    
-    for i,posA in enumerate(listA):
-        tempA=[]
-        for j,posB in enumerate(listA):
+
+    for i, posA in enumerate(listA):
+        tempA = []
+        for j, posB in enumerate(listA):
             if i != j:
                 if np.linalg.norm(np.array(posA) - np.array(posB)) <= 3.5:
                     tempA.append(resA[j])
         lstA[i] = tempA
-    
-    for i,posA in enumerate(listB):
-        tempB=[]
-        for j,posB in enumerate(listB):
+
+    for i, posA in enumerate(listB):
+        tempB = []
+        for j, posB in enumerate(listB):
             if i != j:
                 if np.linalg.norm(np.array(posA) - np.array(posB)) <= 3.5:
                     tempB.append(resB[j])
         lstB[i] = tempB
 
     return resA, resB, lstA, lstB
-            
+
+
 def create_graph(protein):
     hydroA = {}
     hydroB = {}
-    
+
     resA, resB, graphA, graphB = internal_contacts(protein)
     listA, listB = get_hydro_hits(protein)
 
     for i in range(len(resA)):
-        tempA =[]
+        tempA = []
         if resA[i] in listA:
             tempA.append(True)
         hydroA[i] = tempA
 
     for i in range(len(resB)):
-        tempB =[]
+        tempB = []
         if resB[i] in listB:
             tempB.append(True)
         hydroB[i] = tempB
@@ -155,10 +158,6 @@ def create_graph(protein):
     # print(hydroA)
     # print(hydroB)
 
-# prot = Protein("/Users/smriti/Desktop/aeop/Protein-Decoy-Detection-SVR/targets/1c3a_complex_H.pdb")
-#create_graph(prot)
-
-lst = [(1, [1]), (2, [2, 1]), (3, [3, 2]), (4, [3, 2, 2]), (5, [4, 3, 5, 2])]
 
 def score_fnc(lst):
     max_dist = len(lst)
@@ -173,14 +172,14 @@ def score_fnc(lst):
             tot += len(islands) * island
         ns.append(tot)
         avg += tot
-        score += tot/dist_allowed
+        score += tot / dist_allowed
 
-    avg = avg/len(lst)
+    avg = avg / len(lst)
     for val in ns:
-        SD += ((val - avg)**2)
-    
-    SD = SD/(max_dist-1)
-    weighted_avg = score/max_dist
+        SD += ((val - avg) ** 2)
+
+    SD = math.sqrt(SD / (max_dist - 1))
+    weighted_avg = score / max_dist
 
     return score, weighted_avg, avg, SD
 
@@ -199,18 +198,19 @@ def bfs(adj_list, start_node, visited, distances):
                 distances[neighbor] = distances[current_node] + 1
                 q.append(neighbor)
 
+
 def compute_distances(adj_list):
     distances = defaultdict(dict)
-    
+
     for start_node in adj_list:
         visited = {node: False for node in adj_list}
         node_distances = {node: float('inf') for node in adj_list}
         bfs(adj_list, start_node, visited, node_distances)
-        
+
         for node, dist in node_distances.items():
             if dist != float('inf'):
                 distances[start_node][node] = dist
-    
+
     return distances
 
 
@@ -224,12 +224,12 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
 
     for node in adj_list:
         visited[node] = False
-    
+
     for node in adj_list:
         # Only begin exploring from nodes that are hydro and aren't already in an island
         if not hydro_reaction[node] or node in in_island:
             continue
-        
+
         # print(f"Starting node is {node}")
         # We start with a hydro node so the distance starts at 0
 
@@ -262,7 +262,6 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
                 # Check if it can be explored
                 if distance + dist_from_hydro_node <= dist_allowed and dist_node not in visited and dist_node not in in_island:
                     # print(f"{dist_node} node made it into q")
-                    
 
                     # If the new node is a hydro node
                     if hydro_reaction[dist_node]:
@@ -274,7 +273,7 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
                     else:
                         # print(f"{dist_node} is not a hydro reaction so the distance from hydro node is {dist_from_hydro_node + distance}")
                         dist_from_hydro_node += distance
-                    
+
                     q.append((dist_node, dist_from_hydro_node))
             # print()
 
@@ -284,7 +283,6 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
 
 
 def get_max_dist(adj_list, hydro_reaction):
-
     def bfs_dist(adj_list, start_node, hydro_reaction, visited, distances):
         q = deque([start_node])
         visited[start_node] = True
@@ -331,6 +329,7 @@ def get_final_island_data(adj_list, hydro_reaction):
 
     return final_data
 
+
 def process_pdb_folder(full_folder_path, pdb_id):
     results = []
     relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
@@ -348,6 +347,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 results.append((filename[:-4], (get_residues(prot))))
             else:
                 print(f"File did not pass requirements.")
+
 
 def main(folder_path):
     for folder in os.listdir(folder_path):
@@ -371,10 +371,9 @@ def main(folder_path):
         9: [3, 8]
     }
 
-
     hydro_reaction = {
-        0: True, 
-        1: False, 
+        0: True,
+        1: False,
         2: False,
         3: False,
         4: True,
@@ -384,7 +383,7 @@ def main(folder_path):
         8: True,
         9: False,
     }
-    
+
     dist_allowed = 2
     find_islands(graph, dist_allowed, hydro_reaction)
 
@@ -392,6 +391,7 @@ def main(folder_path):
     print(score_fnc(get_final_island_data(graph, hydro_reaction)))
     # print(islands)
     # print(compute_distances(graph))
+
 
 if __name__ == "__main__":
     main(args.pdb_folder)
