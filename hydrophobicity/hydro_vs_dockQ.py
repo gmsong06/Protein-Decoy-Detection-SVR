@@ -9,14 +9,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
 args = parser.parse_args()
 
-dockq = pd.read_csv("final_data_capri_with_hydro.csv")
+dockq = pd.read_csv("/vast/palmer/scratch/ohern/sr2562/Protein-Decoy-Detection-SVR/final_data_groups.csv")
 
 def main(folder_path):
     results = []
     for file in os.listdir(folder_path): 
         file_path = os.path.join(folder_path, file)
         df = pd.read_csv(file_path)
-        pdb_id = file[6:9]
+        pdb_id = file[:4]
         dockq_scores = []
         hydro_scores = []
         print(pdb_id)
@@ -24,7 +24,7 @@ def main(folder_path):
             if row["pdb_id"] == pdb_id:
                 dockq_scores.append(row['DockQ'])
         for index, row in df.iterrows():
-            hydro_scores.append(row['rsm_hydrophobicity_contacts'])
+            hydro_scores.append(row['all_contacts'])
         
         print(dockq_scores)
         spearman_corr, spearman_p = spearmanr(dockq_scores, hydro_scores)
@@ -35,16 +35,16 @@ def main(folder_path):
         fig, ax = plt.subplots(dpi=150, figsize=(5, 5))
         ax.scatter(hydro_scores, dockq_scores, edgecolor='black', color='none')
 
-        ax.set_xlabel('Contacts of similar Hydrophbicity', fontsize=12)
+        ax.set_xlabel('Contacts', fontsize=12)
         ax.set_ylabel('DockQ', fontsize=12)
         ax.set_title(f'Spearman Correlation: {spearman_corr:.2f}', fontsize=12)
 
-        plot_filename = os.path.join("spearman_plots/hydro", f"rsm_{pdb_id}.png")
+        plot_filename = os.path.join("Protein-Decoy-Detection-SVR/spearman_plots/contacts", f"{pdb_id}.png")
         plt.savefig(plot_filename)
         plt.close(fig)  # Close the figure to avoid memory issues
 
     results_df = pd.DataFrame(results)
-    results_df.to_csv('hydro_spearman_capri_rsm.csv', index=False)
+    results_df.to_csv('contacts_spearman.csv', index=False)
     
 if __name__ == "__main__":
     main(args.pdb_folder)

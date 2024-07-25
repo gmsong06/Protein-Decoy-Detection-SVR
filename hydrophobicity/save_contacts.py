@@ -76,9 +76,9 @@ def process_pdb_folder(full_folder_path, pdb_id, hdf5_file):
     random_folder_path = os.path.join(full_folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
 
     paths = [relaxed_folder_path, random_folder_path]
-
+    pdb_group = hdf5_file.create_group(pdb_id)
+    
     for path in paths:
-        pdb_group = hdf5_file.create_group(pdb_id)
         print(f"Path is {path}")
         for filename in os.listdir(path):
             print(f"Filename is {filename}")
@@ -107,8 +107,12 @@ def process_pdb_folder(full_folder_path, pdb_id, hdf5_file):
         
 
 def main(folder_path):
-    hdf5_filepath = 'output_data.hdf5'
-    with h5py.File(hdf5_filepath, 'w') as hdf5_file:
+    main_folder_name = os.path.basename(os.path.normpath(folder_path))
+    hdf5_filename = f"{main_folder_name}_all_contacts.hdf5"
+    print(f"CREATED FILE: {hdf5_filename}")
+    hdf5_filepath = os.path.join('/vast/palmer/scratch/ohern/sr2562/hydro_results/contacts', hdf5_filename)
+
+    with h5py.File(hdf5_filepath, 'a') as hdf5_file:
         for folder in os.listdir(folder_path):
             full_folder_path = os.path.join(folder_path, folder)
             if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
