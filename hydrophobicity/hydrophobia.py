@@ -346,15 +346,9 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 prot = Protein(pdb_path)
                 graphA, graphB, hydroA, hydroB = create_graph(prot)
 
-<<<<<<< HEAD
-		final_island_data = get_final_island_data(graphA, hydroA)
-
-		print(f"Final island data: {final_island_data}"
-=======
                 final_island_data = get_final_island_data(graphA, hydroA)
 
                 print(f"Final island data: {final_island_data}")
->>>>>>> 2e9058a7ca30d04781bbbb5d69f3c345a04a3248
 
                 results.append((filename[:-4], final_island_data))
             else:
