@@ -5,9 +5,10 @@ import os
 import argparse
 import csv
 from collections import deque, defaultdict
-# parser = argparse.ArgumentParser()
-# parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
-# args = parser.parse_args()
+
+parser = argparse.ArgumentParser()
+parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
+args = parser.parse_args()
 
 
 def get_residue_name(protein, residue_id):
@@ -348,14 +349,14 @@ def process_pdb_folder(full_folder_path, pdb_id):
             else:
                 print(f"File did not pass requirements.")
 
-def main():
-    # for folder in os.listdir(folder_path):
-    #     full_folder_path = os.path.join(folder_path, folder)
-    #     if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
-    #         pdb_id = full_folder_path[-4:]
-    #         print(f"PDB id is {pdb_id}")
-    #         process_pdb_folder(full_folder_path, pdb_id)
-    #         print("DONE----------------------------------------------------------------------")
+def main(folder_path):
+    for folder in os.listdir(folder_path):
+        full_folder_path = os.path.join(folder_path, folder)
+        if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
+            pdb_id = full_folder_path[-4:]
+            print(f"PDB id is {pdb_id}")
+            process_pdb_folder(full_folder_path, pdb_id)
+            print("DONE----------------------------------------------------------------------")
 
     graph = {
         0: [1, 4, 6],
@@ -393,4 +394,4 @@ def main():
     # print(compute_distances(graph))
 
 if __name__ == "__main__":
-    main()
+    main(args.pdb_folder)
