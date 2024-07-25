@@ -344,11 +344,13 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 pdb_path = os.path.join(path, filename)
                 print(f"Processing {filename}")
                 prot = Protein(pdb_path)
-                
                 graphA, graphB, hydroA, hydroB = create_graph(prot)
 
+		final_island_data = get_final_island_data(graphA, hydroA)
 
-                results.append((filename[:-4], (get_final_island_data(graphA, hydroA))))
+		print(f"Final island data: {final_island_data}"
+
+                results.append((filename[:-4], final_island_data))
             else:
                 print(f"File did not pass requirements.")
 
@@ -361,40 +363,6 @@ def main(folder_path):
             print(f"PDB id is {pdb_id}")
             process_pdb_folder(full_folder_path, pdb_id)
             print("DONE----------------------------------------------------------------------")
-
-    graph = {
-        0: [1, 4, 6],
-        1: [0, 2, 4, 7],
-        2: [1, 3, 8],
-        3: [2, 5, 9],
-        4: [0, 1],
-        5: [3, 6],
-        6: [0, 5],
-        7: [1, 8],
-        8: [2, 7, 9],
-        9: [3, 8]
-    }
-
-    hydro_reaction = {
-        0: True,
-        1: False,
-        2: False,
-        3: False,
-        4: True,
-        5: True,
-        6: True,
-        7: False,
-        8: True,
-        9: False,
-    }
-
-    dist_allowed = 2
-    find_islands(graph, dist_allowed, hydro_reaction)
-
-    print(get_final_island_data(graph, hydro_reaction))
-    print(score_fnc(get_final_island_data(graph, hydro_reaction)))
-    # print(islands)
-    # print(compute_distances(graph))
 
 
 if __name__ == "__main__":
