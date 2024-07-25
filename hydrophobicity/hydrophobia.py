@@ -346,7 +346,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 prot = Protein(pdb_path)
                 graphA, graphB, hydroA, hydroB = create_graph(prot)
 
-                final_island_data = get_final_island_data(graphB, hydroB)
+                final_island_data = get_final_island_data(graphA, hydroA)
                 
                 score = score_fnc(final_island_data)
 
@@ -356,7 +356,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
             else:
                 print(f"File did not pass requirements.")
 
-    output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/islands/{pdb_id}_hydro_islands.csv'
+    output_csv = f'/home/as4643/palmer_scratch/hydro_results/islands/{pdb_id}_hydro_islands.csv'
     with open(output_csv, mode='w', newline='') as file:
 
         writer = csv.writer(file)
