@@ -8,6 +8,7 @@ from pathlib import Path
 import os
 import argparse
 import csv
+from collections import deque
 
 parser = argparse.ArgumentParser()
 parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
@@ -111,6 +112,40 @@ def get_hydro_hits(file):
     return hits
 
 
+def bfs(adj_list, start_node, hydro_reaction, visited, distances):
+    q = deque([start_node])
+    visited[start_node] = True
+    distances[start_node] = 0
+
+    while q:
+        current_node = q.popleft()
+
+        for neighbor in adj_list[current_node]:
+            if not visited[neighbor]:
+                visited[neighbor] = True
+                distances[neighbor] = distances[current_node] + 1
+                q.append(neighbor)
+
+def get_max_dist(adj_list, hydro_reaction):
+    max_distance = 0
+    nodes_with_reaction = [node for node in hydro_reaction if hydro_reaction[node]]
+    
+    for start_node in nodes_with_reaction:
+        # Initialize visited and distance dictionaries
+        visited = {node: False for node in adj_list}
+        distances = {node: float('inf') for node in adj_list}
+        
+        bfs(adj_list, start_node, hydro_reaction, visited, distances)
+        
+        # Calculate maximum distance to nodes with hydro_reaction as True
+        for end_node in nodes_with_reaction:
+            if distances[end_node] != float('inf'):
+                max_distance = max(max_distance, distances[end_node])
+    
+    return max_distance
+
+
+
 def process_pdb_folder(full_folder_path, pdb_id):
     results = []
     relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
@@ -136,13 +171,33 @@ def process_pdb_folder(full_folder_path, pdb_id):
             writer.writerow(result)
 
 def main(folder_path):
-    for folder in os.listdir(folder_path):
-        full_folder_path = os.path.join(folder_path, folder)
-        if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
-            pdb_id = full_folder_path[-4:]
-            print(f"PDB id is {pdb_id}")
-            process_pdb_folder(full_folder_path, pdb_id)
-            print("DONE----------------------------------------------------------------------")
+    # for folder in os.listdir(folder_path):
+    #     full_folder_path = os.path.join(folder_path, folder)
+    #     if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
+    #         pdb_id = full_folder_path[-4:]
+    #         print(f"PDB id is {pdb_id}")
+    #         process_pdb_folder(full_folder_path, pdb_id)
+    #         print("DONE----------------------------------------------------------------------")
+
+    graph = {
+        0: [1, 4],
+        1: [0, 2, 4],
+        2: [1, 3, 4],
+        3: [2, 5],
+        4: [0, 1, 2],
+        5:  [3]
+    }
+
+    hydro_reaction = {
+        0: True, 
+        1: True, 
+        2: False,
+        3: True,
+        4: True,
+        5: False
+    }
+    
+    print(get_max_dist(graph, hydro_reaction))
 
 if __name__ == "__main__":
     main(args.pdb_folder)
