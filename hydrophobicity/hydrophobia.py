@@ -344,7 +344,11 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 pdb_path = os.path.join(path, filename)
                 print(f"Processing {filename}")
                 prot = Protein(pdb_path)
-                results.append((filename[:-4], (get_residues(prot))))
+                
+                graphA, graphB, hydroA, hydroB = create_graph(prot)
+
+
+                results.append((filename[:-4], (get_final_island_data(graphA, hydroA))))
             else:
                 print(f"File did not pass requirements.")
 
