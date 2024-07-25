@@ -8,7 +8,7 @@ from pathlib import Path
 import os
 import argparse
 import csv
-from collections import deque
+from collections import deque, defaultdict
 
 parser = argparse.ArgumentParser()
 parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
@@ -112,7 +112,7 @@ def get_hydro_hits(file):
     return hits
 
 
-def bfs(adj_list, start_node, hydro_reaction, visited, distances):
+def bfs(adj_list, start_node, visited, distances):
     q = deque([start_node])
     visited[start_node] = True
     distances[start_node] = 0
@@ -126,25 +126,91 @@ def bfs(adj_list, start_node, hydro_reaction, visited, distances):
                 distances[neighbor] = distances[current_node] + 1
                 q.append(neighbor)
 
-def get_max_dist(adj_list, hydro_reaction):
-    max_distance = 0
-    nodes_with_reaction = [node for node in hydro_reaction if hydro_reaction[node]]
+def compute_distances(adj_list):
+    distances = defaultdict(dict)
     
-    for start_node in nodes_with_reaction:
-        # Initialize visited and distance dictionaries
+    for start_node in adj_list:
         visited = {node: False for node in adj_list}
-        distances = {node: float('inf') for node in adj_list}
+        node_distances = {node: float('inf') for node in adj_list}
+        bfs(adj_list, start_node, visited, node_distances)
         
-        bfs(adj_list, start_node, hydro_reaction, visited, distances)
-        
-        # Calculate maximum distance to nodes with hydro_reaction as True
-        for end_node in nodes_with_reaction:
-            if distances[end_node] != float('inf'):
-                max_distance = max(max_distance, distances[end_node])
+        for node, dist in node_distances.items():
+            if dist != float('inf'):
+                distances[start_node][node] = dist
     
-    return max_distance
+    return distances
 
 
+def find_islands(adj_list, dist_allowed, hydro_reaction):
+    distances = compute_distances(adj_list)
+    islands = []
+
+    in_island = set()
+
+    visited = {}
+
+    for node in adj_list:
+        visited[node] = False
+    
+    for node in adj_list:
+        # Only begin exploring from nodes that are hydro and aren't already in an island
+        if not hydro_reaction[node] or node in in_island:
+            continue
+        
+        print(f"Starting node is {node}")
+        # We start with a hydro node so the distance starts at 0
+
+        current_island = [node]
+        in_island.add(node)
+
+        q = deque()
+        q.append((node, 0))
+
+        visited = set()
+
+        while q:
+            print(f"Length of q is {len(q)}")
+            curr_node_info = q.popleft()
+
+            curr_node = curr_node_info[0]
+            dist_from_hydro_node = curr_node_info[1]
+
+            visited.add(curr_node)
+
+            print(f"Current node is {curr_node}")
+
+            for dist_node in distances[curr_node]:
+                dist_from_hydro_node = curr_node_info[1]
+                print(f"Dist node is {dist_node}")
+                print(f"Dist from hydro node is {dist_from_hydro_node}")
+                distance = distances[curr_node][dist_node]
+                # print(f"Node is {dist_node}. Distance is {distance}")
+
+                # Check if it can be explored
+                if distance + dist_from_hydro_node <= dist_allowed and dist_node not in visited and dist_node not in in_island:
+                    print(f"{dist_node} node made it into q")
+                    
+
+                    # If the new node is a hydro node
+                    if hydro_reaction[dist_node]:
+                        print(f"{dist_node} node is a hydro reaction so distance from hydro node is 0")
+                        dist_from_hydro_node = 0
+                        current_island.append(dist_node)
+                        in_island.add(dist_node)
+                        print(f"Here is the current island: {current_island}")
+                    else:
+                        print(f"{dist_node} is not a hydro reaction so the distance from hydro node is {dist_from_hydro_node + distance}")
+                        dist_from_hydro_node += distance
+                    
+                    q.append((dist_node, dist_from_hydro_node))
+            print()
+
+        islands.append(current_island)
+
+        print(islands)
+        
+    
+    return [len(island) for island in islands]
 
 def process_pdb_folder(full_folder_path, pdb_id):
     results = []
@@ -180,24 +246,36 @@ def main(folder_path):
     #         print("DONE----------------------------------------------------------------------")
 
     graph = {
-        0: [1, 4],
-        1: [0, 2, 4],
-        2: [1, 3, 4],
-        3: [2, 5],
-        4: [0, 1, 2],
-        5:  [3]
+        0: [1, 4, 6],
+        1: [0, 2, 4, 7],
+        2: [1, 3, 8],
+        3: [2, 5, 9],
+        4: [0, 1],
+        5: [3, 6],
+        6: [0, 5],
+        7: [1, 8],
+        8: [2, 7, 9],
+        9: [3, 8]
     }
+
 
     hydro_reaction = {
         0: True, 
-        1: True, 
+        1: False, 
         2: False,
-        3: True,
+        3: False,
         4: True,
-        5: False
+        5: True,
+        6: True,
+        7: False,
+        8: True,
+        9: False,
     }
     
-    print(get_max_dist(graph, hydro_reaction))
+    dist_allowed = 2
+    find_islands(graph, dist_allowed, hydro_reaction)
+    # print(islands)
+    # print(compute_distances(graph))
 
 if __name__ == "__main__":
     main(args.pdb_folder)
