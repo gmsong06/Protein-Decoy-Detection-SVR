@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import argparse
 import csv
+from collections import deque, defaultdict
 import math
 
 parser = argparse.ArgumentParser()
@@ -155,13 +156,14 @@ def create_graph(protein):
     # print(hydroA)
     # print(hydroB)
 
-def score_fnc(data):
-    max_dist = len(data)
+
+def score_fnc(lst):
+    max_dist = len(lst)
     avg = 0
     score = 0
     SD = 0
     ns = []
-    for dist in data:
+    for dist in lst:
         dist_allowed, islands = dist
         tot = 0
         for island in islands:
@@ -178,6 +180,7 @@ def score_fnc(data):
     weighted_avg = score/max_dist
 
     return score, weighted_avg, avg, SD
+
 
 def bfs(adj_list, start_node, visited, distances):
     q = deque([start_node])
@@ -223,7 +226,7 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
         if not hydro_reaction[node] or node in in_island:
             continue
         
-        print(f"Starting node is {node}")
+        # print(f"Starting node is {node}")
         # We start with a hydro node so the distance starts at 0
 
         current_island = [node]
@@ -235,7 +238,7 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
         visited = set()
 
         while q:
-            print(f"Length of q is {len(q)}")
+            # print(f"Length of q is {len(q)}")
             curr_node_info = q.popleft()
 
             curr_node = curr_node_info[0]
@@ -243,43 +246,113 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
 
             visited.add(curr_node)
 
-            print(f"Current node is {curr_node}")
+            # print(f"Current node is {curr_node}")
 
             for dist_node in distances[curr_node]:
                 dist_from_hydro_node = curr_node_info[1]
-                print(f"Dist node is {dist_node}")
-                print(f"Dist from hydro node is {dist_from_hydro_node}")
+                # print(f"Dist node is {dist_node}")
+                # print(f"Dist from hydro node is {dist_from_hydro_node}")
                 distance = distances[curr_node][dist_node]
                 # print(f"Node is {dist_node}. Distance is {distance}")
 
                 # Check if it can be explored
                 if distance + dist_from_hydro_node <= dist_allowed and dist_node not in visited and dist_node not in in_island:
-                    print(f"{dist_node} node made it into q")
+                    # print(f"{dist_node} node made it into q")
                     
 
                     # If the new node is a hydro node
                     if hydro_reaction[dist_node]:
-                        print(f"{dist_node} node is a hydro reaction so distance from hydro node is 0")
+                        # print(f"{dist_node} node is a hydro reaction so distance from hydro node is 0")
                         dist_from_hydro_node = 0
                         current_island.append(dist_node)
                         in_island.add(dist_node)
-                        print(f"Here is the current island: {current_island}")
+                        # print(f"Here is the current island: {current_island}")
                     else:
-                        print(f"{dist_node} is not a hydro reaction so the distance from hydro node is {dist_from_hydro_node + distance}")
+                        # print(f"{dist_node} is not a hydro reaction so the distance from hydro node is {dist_from_hydro_node + distance}")
                         dist_from_hydro_node += distance
                     
                     q.append((dist_node, dist_from_hydro_node))
-            print()
+            # print()
 
         islands.append(current_island)
 
-        print(islands)
-        
-    
     return [len(island) for island in islands]
 
 
-def main(folder_path):
+def get_max_dist(adj_list, hydro_reaction):
+
+    def bfs_dist(adj_list, start_node, hydro_reaction, visited, distances):
+        q = deque([start_node])
+        visited[start_node] = True
+        distances[start_node] = 0
+
+        while q:
+            current_node = q.popleft()
+
+            for neighbor in adj_list[current_node]:
+                if not visited[neighbor]:
+                    visited[neighbor] = True
+                    distances[neighbor] = distances[current_node] + 1
+                    q.append(neighbor)
+
+    max_distance = 0
+    nodes_with_reaction = [node for node in hydro_reaction if hydro_reaction[node]]
+
+    for start_node in nodes_with_reaction:
+        # Initialize visited and distance dictionaries
+        visited = {node: False for node in adj_list}
+        distances = {node: float('inf') for node in adj_list}
+
+        bfs_dist(adj_list, start_node, hydro_reaction, visited, distances)
+
+        # Calculate maximum distance to nodes with hydro_reaction as True
+        for end_node in nodes_with_reaction:
+            if distances[end_node] != float('inf'):
+                max_distance = max(max_distance, distances[end_node])
+
+    return max_distance
+
+
+def get_final_island_data(adj_list, hydro_reaction):
+    max_dist = get_max_dist(adj_list, hydro_reaction)
+
+    final_data = []
+
+    for i in range(max_dist):
+        dist_allowed = i + 1
+
+        islands = find_islands(adj_list, dist_allowed, hydro_reaction)
+
+        final_data.append((dist_allowed, islands))
+
+    return final_data
+
+def process_pdb_folder(full_folder_path, pdb_id):
+    results = []
+    relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
+    random_folder_path = os.path.join(full_folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
+
+    paths = [relaxed_folder_path, random_folder_path]
+    for path in paths:
+        print(f"Path is {path}")
+        for filename in os.listdir(path):
+            print(f"Filename is {filename}")
+            if filename.endswith('.pdb') and ("NoH" not in filename):
+                pdb_path = os.path.join(path, filename)
+                print(f"Processing {filename}")
+                prot = Protein(pdb_path)
+                results.append((filename[:-4], (get_residues(prot))))
+            else:
+                print(f"File did not pass requirements.")
+
+def main():
+    # for folder in os.listdir(folder_path):
+    #     full_folder_path = os.path.join(folder_path, folder)
+    #     if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
+    #         pdb_id = full_folder_path[-4:]
+    #         print(f"PDB id is {pdb_id}")
+    #         process_pdb_folder(full_folder_path, pdb_id)
+    #         print("DONE----------------------------------------------------------------------")
 
     graph = {
         0: [1, 4, 6],
@@ -310,48 +383,11 @@ def main(folder_path):
     
     dist_allowed = 2
     find_islands(graph, dist_allowed, hydro_reaction)
+
+    print(get_final_island_data(graph, hydro_reaction))
+    print(score_fnc(get_final_island_data(graph, hydro_reaction)))
     # print(islands)
     # print(compute_distances(graph))
 
 if __name__ == "__main__":
-    main(args.pdb_folder)
-
-'''
-output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/SD/{pdb_id}_hydrophobicity_fnc.csv'
-        with open(output_csv, mode='w', newline='') as file:
-
-            writer = csv.writer(file)
-            writer.writerow(['pdb_file', 'avg_dif', 'N', 'standard_deviation'])
-            for result in results:
-                writer.writerow(result)
-                
-def process_pdb_folder(full_folder_path, pdb_id):
-    results = []
-    relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
-    random_folder_path = os.path.join(full_folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
-
-    paths = [relaxed_folder_path, random_folder_path]
-    for path in paths:
-        print(f"Path is {path}")
-        for filename in os.listdir(path):
-            print(f"Filename is {filename}")
-            if filename.endswith('.pdb') and ("NoH" not in filename):
-                pdb_path = os.path.join(path, filename)
-                print(f"Processing {filename}")
-                prot = Protein(pdb_path)
-                results.append((filename[:-4], (get_residues(prot))))
-            else:
-                print(f"File did not pass requirements.")
-
-def main(folder_path):
-    for folder in os.listdir(folder_path):
-        full_folder_path = os.path.join(folder_path, folder)
-        if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
-            pdb_id = full_folder_path[-4:]
-            print(f"PDB id is {pdb_id}")
-            process_pdb_folder(full_folder_path, pdb_id)
-            print("DONE----------------------------------------------------------------------")
-
-if __name__ == "__main__":
-    main(args.pdb_folder)
-'''
+    main()
