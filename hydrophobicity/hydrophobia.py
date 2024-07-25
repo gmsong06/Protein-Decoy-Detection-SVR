@@ -347,11 +347,14 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 
                 graphA, graphB, hydroA, hydroB = create_graph(prot)
 
+                final_island_data = get_final_island_data(graphA, hydroA)
 
-                results.append((filename[:-4], (get_final_island_data(graphA, hydroA))))
+                print(f"Final island data: {final_island_data}")
+
+                results.append((filename[:-4], final_island_data))
             else:
                 print(f"File did not pass requirements.")
-
+        print()
 
 def main(folder_path):
     for folder in os.listdir(folder_path):
