@@ -344,11 +344,15 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 pdb_path = os.path.join(path, filename)
                 print(f"Processing {filename}")
                 prot = Protein(pdb_path)
-                
                 graphA, graphB, hydroA, hydroB = create_graph(prot)
 
+                final_island_data = get_final_island_data(graphB, hydroB)
+                
+                score = score_fnc(final_island_data)
 
-                results.append((filename[:-4], (get_final_island_data(graphB, hydroB))))
+                print(f"Final island data: {score}")
+
+                results.append((filename[:-4], score))
             else:
                 print(f"File did not pass requirements.")
 
