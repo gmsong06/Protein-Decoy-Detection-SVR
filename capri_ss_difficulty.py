@@ -20,7 +20,7 @@ mpl.rcParams['mathtext.fontset'] = 'cm'
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-main_dir=Path("/home/annsong/Downloads")
+main_dir=Path("/home/annsong/Desktop")
 score_dir=main_dir / Path('capri_score_files/')
 patch_feature_dir=Path('C:/Users/brand/Documents/OHern_Lab/DeepRank_Retrain/lr5e-6_patch_features')
 
@@ -44,8 +44,8 @@ def get_deeprank_scores(dq_path,dr_rand_path,dr_samp_path,decoy):
     dr_targ_samp_path=dr_samp_path/Path(decoy+"_output.csv")
     dr_targ_rand_path=dr_rand_path/Path(decoy+"_output.csv")
 
-    dq_targ_sampled_path=dq_path/Path("dockq_scores_" + decoy+"_sampled.csv")
-    dq_targ_rand_path=dq_path/Path("dockq_scores_" + decoy+"_random.csv")
+    dq_targ_sampled_path=dq_path/Path(decoy+"_sampled_dockQ.csv")
+    dq_targ_rand_path=dq_path/Path(decoy+"_random_dockQ.csv")
 
     dr_samp=pd.read_csv(dr_targ_samp_path, index_col='pdb_id',header=0)
     dr_rand=pd.read_csv(dr_targ_rand_path, index_col='pdb_id',header=0)
@@ -198,124 +198,134 @@ def get_spearmans(targ_data,decoy):
 
         return spearmans,score_list
 
-def compare_all_scores(targids,showplots):
-    ##  WILL NEED TO EDIT SINCE GETDRDATA HAS BEEN BROKEN UP INTO TWO FUNCTIONS
-    spearmans=pd.DataFrame()
+def compare_all_scores(targids, showplots):
+    spearmans_list = []
 
-    for ind,decoy in enumerate(targids):
-        
-        targ_score_path=score_dir / Path('scores_sampled_'+decoy)
+    for decoy in targids:
+        targ_score_path = score_dir / Path('scores_sampled_' + decoy)
         print(f"Target score path is {targ_score_path}")
-        #retrain_data=get_retrain_scores(retrain_samp_path,retrain_rand_path,decoy)
-        #patch_retrain_data=get_retrain_scores(patch_samp_path,patch_rand_path,decoy)
-        #patch_retrain_data.rename(columns={"predicted_fnat_retrain":"predicted_fnat_patch"},inplace=True)
 
+        pydock_data = get_pydock_scores(targ_score_path)
+        voro_data = get_voromqa_scores(targ_score_path)
+        zrank_data = get_zrank_scores(targ_score_path)
+        itscorepp_data = get_zrank_scores(targ_score_path, file_indicator='itscorepp')
+        rosetta_data = get_rosetta_scores(targ_score_path)
+        dr_data = get_deeprank_scores(dq_path, dr_rand_path, dr_samp_path, decoy)
 
-        pydock_data=get_pydock_scores(targ_score_path)
-        voro_data=get_voromqa_scores(targ_score_path)
-        zrank_data=get_zrank_scores(targ_score_path)
-        itscorepp_data=get_zrank_scores(targ_score_path,file_indicator='itscorepp')
-        rosetta_data=get_rosetta_scores(targ_score_path)
-        dr_data=get_deeprank_scores(dq_path,dr_rand_path,dr_samp_path,decoy)
-        #targ_data=pd.concat([dr_data,retrain_data,patch_retrain_data,zrank_data,rosetta_data,itscorepp_data,voro_data,pydock_data], axis=1)
-        targ_data=pd.concat([dr_data,zrank_data,rosetta_data,itscorepp_data,voro_data,pydock_data], axis=1)
-
-        temp_spearmans,score_list=get_spearmans(targ_data,decoy)
-        spearmans=spearmans.append(temp_spearmans)
-
-    avg_spear=[]
-    avg_std=[]
-    for targ in targids:
-        avg_spear.append(np.average(spearmans.loc[targ].values))
-        avg_std.append(np.std(spearmans.loc[targ].values))
-    spearmans['Average']=avg_spear
-    spearmans['STD']=avg_std
-    spearmans.sort_values(by=['Average'],inplace=True)
-    spearmans.to_csv(str(Path('C:/Users/brand/Documents/OHern_Lab/Prospectus/capri_scoreset_difficulty.csv')))
-
+        targ_data = pd.concat([dr_data, zrank_data, rosetta_data, itscorepp_data, voro_data, pydock_data], axis=1)
+        
+        temp_spearmans, score_list = get_spearmans(targ_data, decoy)
+        
+        temp_spearmans.index = [decoy]  # Set the decoy as the index
+        spearmans_list.append(temp_spearmans)
     
-    # score_list=['DeepRank-GNN-ESM','Retrained DeepRank','Patches DeepRank','ZRank2','Rosetta','ITscorePP','VoroMQA','PyDock']
-    # colors=('tab:red','tab:pink','k','tab:blue','tab:green','tab:cyan','tab:purple','tab:orange')
-    # shapes=('d','X','X','^','s','o','*','h')
+    spearmans = pd.concat(spearmans_list)
+    spearmans.index.name = 'Target'
+    # avg_spear = spearmans.mean(axis=1)
+    # avg_std = spearmans.std(axis=1)
 
-    score_list=['DeepRank-GNN-ESM','ZRank2','Rosetta','ITscorePP','VoroMQA','PyDock']
-    colors=('tab:red','tab:blue','tab:green','tab:cyan','tab:purple','tab:orange')
-    shapes=('d','^','s','o','*','h')
+    # spearmans['Average'] = avg_spear
+    # spearmans['STD'] = avg_std
+    # spearmans.sort_values(by=['Average'], inplace=True)
+    # spearmans.to_csv('capri_scoreset_difficulty.csv')
 
-    fig=plt.figure(1,figsize=[10,5.5])
+    # score_list = ['DeepRank-GNN-ESM', 'ZRank2', 'Rosetta', 'ITscorePP', 'VoroMQA', 'PyDock']
+    # colors = ('tab:red', 'tab:blue', 'tab:green', 'tab:cyan', 'tab:purple', 'tab:orange')
+    # shapes = ('d', '^', 's', 'o', '*', 'h')
+
+    # fig = plt.figure(1, figsize=[10, 5.5])
+    # ax = fig.add_axes([0.1, 0.11, 0.6, 0.75])
+    # for ind, score in enumerate(score_list):
+    #     ax.plot(range(len(targids)), spearmans[score], color=colors[ind], marker=shapes[ind], markerfacecolor='None', linestyle='None', label=score, markersize=10)
+    # ax.errorbar(range(len(targids)), spearmans['Average'], yerr=spearmans['STD'], color='k', marker='.', label='Average', linewidth=.75)
+    # ax.set_xlabel('Target', fontsize=14)
+    # ax.set_ylabel(r'$\rho$', fontsize=14)
+    # ax.legend(loc='upper right', fontsize=12, bbox_to_anchor=(1.45, 1))
+    # ax.hlines([-1, -0.8, -0.6, -0.4, -0.2, 0], 0, len(targids)-1, colors='tab:gray', linestyles='dotted', linewidth=.5)
+    # ax.set_xticks(range(len(targids)))
+    # ax.set_xticklabels(spearmans.index)
+
+    # plt.savefig('capri_scoreset_difficulty_spearman.png', dpi=300)
+    # if showplots:
+    #     plt.show()
+
+def plot_all_scores(targids, spearman_data):
+    spearman_data = pd.read_csv(spearman_data)
+
+    # print(spearman_data)
+    # avg_spear = spearman_data.mean(axis=1)
+    # avg_std = spearman_data.std(axis=1)
+
+    # spearman_data['Average'] = avg_spear
+    # spearman_data['STD'] = avg_std
+    spearman_data.sort_values(by=['Average'], inplace=True)
+    # spearman_data.to_csv('capri_scoreset_difficulty.csv')
+
+    score_list = ['DeepRank-GNN-ESM', 'ZRank2', 'Rosetta', 'ITscorePP', 'VoroMQA', 'PyDock', 'SVR']
+    colors = ('tab:red', 'tab:blue', 'tab:green', 'tab:cyan', 'tab:purple', 'tab:orange', 'tab:red')
+    shapes = ('d', '^', 's', 'o', '*', 'h', '*')
+
+    fig = plt.figure(1, figsize=[10, 5.5])
     ax = fig.add_axes([0.1, 0.11, 0.6, 0.75])
     for ind, score in enumerate(score_list):
-        ax.plot(range(len(targids)), spearmans[score],color=colors[ind],marker=shapes[ind],markerfacecolor='None',linestyle='None',label=score, markersize=10)
-    ax.errorbar(range(len(targids)),spearmans['Average'],spearmans['STD'],color='k',marker='.',label='Average',linewidth=.75)
-    ax.set_xlabel(r'Target',fontsize=14)
-    ax.set_ylabel(r'$\rho$',fontsize=14)
-    ax.legend(loc='upper right',fontsize=12,bbox_to_anchor=(1.45, 1))
-    ax.hlines([-1,-0.8,-0.6,-0.4,-0.2,0],0,len(targids)-1,colors='tab:gray',linestyles='dotted',linewidth=.5)
-    ax.set_xticks((range(len(targids))))
-    ax.set_xticklabels(spearmans.index)
+        ax.plot(range(len(targids)), spearman_data[score], color=colors[ind], marker=shapes[ind], markerfacecolor='None', linestyle='None', label=score, markersize=10)
+    ax.errorbar(range(len(targids)), spearman_data['Average'], yerr=spearman_data['STD'], color='k', marker='.', label='Average', linewidth=.75)
+    ax.set_xlabel('Target', fontsize=14)
+    ax.set_ylabel(r'$\rho$', fontsize=14)
+    ax.legend(loc='upper right', fontsize=12, bbox_to_anchor=(1.45, 1))
+    ax.hlines([-1, -0.8, -0.6, -0.4, -0.2, 0], 0, len(targids)-1, colors='tab:gray', linestyles='dotted', linewidth=.5)
+    ax.set_xticks(range(len(targids)))
+    ax.set_xticklabels(spearman_data.index)
 
-    plt.savefig(str(Path('C:/Users/brand/Documents/OHern_Lab/Prospectus/capri_scoreset_difficulty_spearman.png')),dpi=300)
-    if showplots:
-        plt.show()
+    plt.savefig('capri_scoreset_difficulty_spearman.png', dpi=300)
+    plt.show()
 
-def compare_seeded_runs(targids,showplots):
-    seeded_path_main=Path('C:/Users/brand/Documents/OHern_Lab/DeepRank_Retrain/lr5e-6_epoch_comparisons/nonshuffled_scores/')
-    spearmans=pd.DataFrame()
-    epochs=['e10','e20','e30','e40','e50']
-    #scorenames=[i+' Retrained (no patches)' for i in epochs]
-    #score_list=['Original Deeprank','e50 Retrained w/Patches']+scorenames
-    score_list=['Original Deeprank']+ epochs
-    retrain_data=pd.DataFrame()
-    
-    for ind,decoy in enumerate(targids):
-        spear_list=[]
-        dr_data=get_deeprank_scores(dq_path,dr_rand_path,dr_samp_path,decoy)
-        spear_dr=spearmanr(-dr_data.get('predicted_fnat'),dr_data.get('dockQ'))
+def compare_seeded_runs(targids, showplots):
+    seeded_path_main = Path('C:/Users/brand/Documents/OHern_Lab/DeepRank_Retrain/lr5e-6_epoch_comparisons/nonshuffled_scores/')
+    epochs = ['e10', 'e20', 'e30', 'e40', 'e50']
+    score_list = ['Original Deeprank'] + epochs
+    spearmans_list = []
+
+    for decoy in targids:
+        spear_list = []
+        retrain_data = pd.DataFrame()
+
+        dr_data = get_deeprank_scores(dq_path, dr_rand_path, dr_samp_path, decoy)
+        spear_dr = spearmanr(-dr_data['predicted_fnat'], dr_data['dockQ'])
         spear_list.append(spear_dr[0])
 
-        # patch_retrain_data=get_retrain_scores(patch_samp_path,patch_rand_path,decoy)
-        # patch_retrain_data.rename(columns={"predicted_fnat_retrain":"predicted_fnat_patch"},inplace=True)
-        # spear_patch=spearmanr(-patch_retrain_data.get('predicted_fnat_patch'),dr_data.get('dockQ'))
-        # spear_list.append(spear_patch[0])
-
         for epoch in epochs:
-            retrain_samp_path=seeded_path_main / Path(epoch+"_sampled_scores")
-            retrain_rand_path=seeded_path_main / Path(epoch+"_random_scores")
+            retrain_samp_path = seeded_path_main / Path(epoch + "_sampled_scores")
+            retrain_rand_path = seeded_path_main / Path(epoch + "_random_scores")
 
-            temp_retrain_data=get_retrain_scores(retrain_samp_path,retrain_rand_path,decoy)
-            temp_retrain_data.rename(columns={"predicted_fnat_retrain":"predicted_fnat_"+epoch},inplace=True)
-            retrain_data=pd.concat([retrain_data,temp_retrain_data],axis=1)
-            spear_retrain=spearmanr(-temp_retrain_data.get('predicted_fnat_'+epoch),dr_data.get('dockQ'))
+            temp_retrain_data = get_retrain_scores(retrain_samp_path, retrain_rand_path, decoy)
+            temp_retrain_data.rename(columns={"predicted_fnat_retrain": "predicted_fnat_" + epoch}, inplace=True)
+            retrain_data = pd.concat([retrain_data, temp_retrain_data], axis=1)
+            spear_retrain = spearmanr(-temp_retrain_data['predicted_fnat_' + epoch], dr_data['dockQ'])
             spear_list.append(spear_retrain[0])
-            
-        
-        dr_data=pd.concat([dr_data,retrain_data],axis=1)
+
+        dr_data = pd.concat([dr_data, retrain_data], axis=1)
         spear_dict = {score_list[i]: spear_list[i] for i in range(len(score_list))}
-        spear_df=pd.DataFrame(spear_dict,index=[decoy])
-        spearmans=spearmans.append(spear_df)
-    
-    avg_spear=[]
-    for targ in targids:
-        avg_spear.append(np.average(spearmans.loc[targ].values))
-    spearmans['Average']=avg_spear
-    spearmans.sort_values(by=['Average'],inplace=True)
-  
-    # colors=('tab:pink','k','tab:purple','tab:red','tab:green','tab:orange','tab:blue')
-    # shapes=('d','P','X','X','X','X','X')
+        spear_df = pd.DataFrame(spear_dict, index=[decoy])
+        spearmans_list.append(spear_df)
 
-    colors=('tab:pink','tab:purple','tab:red','tab:green','tab:orange','tab:blue')
-    shapes=('d','X','X','X','X','X')
+    spearmans = pd.concat(spearmans_list)
+    spearmans['Average'] = spearmans.mean(axis=1)
+    spearmans.sort_values(by=['Average'], inplace=True)
 
-    fig=plt.figure(1,figsize=[8,5])
+    colors = ('tab:pink', 'tab:purple', 'tab:red', 'tab:green', 'tab:orange', 'tab:blue')
+    shapes = ('d', 'X', 'X', 'X', 'X', 'X')
+
+    fig = plt.figure(1, figsize=[8, 5])
     ax = fig.add_axes([0.1, 0.11, 0.6, 0.75])
     for ind, score in enumerate(score_list):
-        ax.plot(range(len(targids)), spearmans[score],color=colors[ind],marker=shapes[ind],markerfacecolor='None',linestyle='None',label=score, markersize=10)
-    ax.plot(range(len(targids)),spearmans['Average'],color='k',marker='.',label='Average',linewidth=.75)
-    ax.set_xlabel(r'Target',fontsize=12)
-    ax.set_ylabel(r'$<\rho>$',fontsize=12)
-    ax.legend(loc='upper right',fontsize=12,bbox_to_anchor=(1.51, 1))
-    ax.hlines([-1,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4],0,len(targids)-1,colors='tab:gray',linestyles='dotted',linewidth=.5)
-    ax.set_xticks((range(len(targids))))
+        ax.plot(range(len(targids)), spearmans[score], color=colors[ind], marker=shapes[ind], markerfacecolor='None', linestyle='None', label=score, markersize=10)
+    ax.plot(range(len(targids)), spearmans['Average'], color='k', marker='.', label='Average', linewidth=.75)
+    ax.set_xlabel('Target', fontsize=12)
+    ax.set_ylabel(r'$<\rho>$', fontsize=12)
+    ax.legend(loc='upper right', fontsize=12, bbox_to_anchor=(1.51, 1))
+    ax.hlines([-1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4], 0, len(targids)-1, colors='tab:gray', linestyles='dotted', linewidth=.5)
+    ax.set_xticks(range(len(targids)))
     ax.set_xticklabels(spearmans.index)
     if showplots:
         plt.show()
@@ -326,7 +336,8 @@ def compare_seeded_runs(targids,showplots):
 
 def main():
     targids=['T30','T32','T35','T37','T39','T41','T46','T47','T50','T53','T54'] #'T29',
-    compare_all_scores(targids,showplots=True)
+    # compare_all_scores(targids,showplots=True)
+    plot_all_scores(targids, 'capri_scoreset_difficulty.csv')
     #compare_seeded_runs(targids,showplots=True)
 
         
