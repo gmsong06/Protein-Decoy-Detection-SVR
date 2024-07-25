@@ -4,10 +4,11 @@ import pandas as pd
 import os
 import argparse
 import csv
+import math
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
+args = parser.parse_args()
 
 
 def get_residue_name(protein, residue_id):
@@ -154,18 +155,13 @@ def create_graph(protein):
     # print(hydroA)
     # print(hydroB)
 
-prot = Protein("/Users/smriti/Desktop/aeop/Protein-Decoy-Detection-SVR/targets/1c3a_complex_H.pdb")
-#create_graph(prot)
-
-lst = [(1, [1]), (2, [2, 1]), (3, [3, 2]), (4, [3, 2, 2]), (5, [4, 3, 5, 2])]
-
-def score_fnc(lst):
-    max_dist = len(lst)
+def score_fnc(data):
+    max_dist = len(data)
     avg = 0
     score = 0
     SD = 0
     ns = []
-    for dist in lst:
+    for dist in data:
         dist_allowed, islands = dist
         tot = 0
         for island in islands:
@@ -178,51 +174,10 @@ def score_fnc(lst):
     for val in ns:
         SD += ((val - avg)**2)
     
-    SD = SD/(max_dist-1)
+    SD = math.sqrt(SD/(max_dist-1))
     weighted_avg = score/max_dist
 
     return score, weighted_avg, avg, SD
-
-
-'''
-output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/SD/{pdb_id}_hydrophobicity_fnc.csv'
-        with open(output_csv, mode='w', newline='') as file:
-
-            writer = csv.writer(file)
-            writer.writerow(['pdb_file', 'avg_dif', 'N', 'standard_deviation'])
-            for result in results:
-                writer.writerow(result)
-                
-def process_pdb_folder(full_folder_path, pdb_id):
-    results = []
-    relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
-    random_folder_path = os.path.join(full_folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
-
-    paths = [relaxed_folder_path, random_folder_path]
-    for path in paths:
-        print(f"Path is {path}")
-        for filename in os.listdir(path):
-            print(f"Filename is {filename}")
-            if filename.endswith('.pdb') and ("NoH" not in filename):
-                pdb_path = os.path.join(path, filename)
-                print(f"Processing {filename}")
-                prot = Protein(pdb_path)
-                results.append((filename[:-4], (get_residues(prot))))
-            else:
-                print(f"File did not pass requirements.")
-
-def main(folder_path):
-    for folder in os.listdir(folder_path):
-        full_folder_path = os.path.join(folder_path, folder)
-        if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
-            pdb_id = full_folder_path[-4:]
-            print(f"PDB id is {pdb_id}")
-            process_pdb_folder(full_folder_path, pdb_id)
-            print("DONE----------------------------------------------------------------------")
-
-if __name__ == "__main__":
-    main(args.pdb_folder)
-'''
 
 def bfs(adj_list, start_node, visited, distances):
     q = deque([start_node])
@@ -251,7 +206,6 @@ def compute_distances(adj_list):
                 distances[start_node][node] = dist
     
     return distances
-
 
 def find_islands(adj_list, dist_allowed, hydro_reaction):
     distances = compute_distances(adj_list)
@@ -324,32 +278,8 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
     
     return [len(island) for island in islands]
 
-def process_pdb_folder(full_folder_path, pdb_id):
-    results = []
-    relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
-    random_folder_path = os.path.join(full_folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
-
-    paths = [relaxed_folder_path, random_folder_path]
-    for path in paths:
-        print(f"Path is {path}")
-        for filename in os.listdir(path):
-            print(f"Filename is {filename}")
-            if filename.endswith('.pdb') and ("NoH" not in filename):
-                pdb_path = os.path.join(path, filename)
-                print(f"Processing {filename}")
-                prot = Protein(pdb_path)
-                results.append((filename[:-4], (get_residues(prot))))
-            else:
-                print(f"File did not pass requirements.")
 
 def main(folder_path):
-    # for folder in os.listdir(folder_path):
-    #     full_folder_path = os.path.join(folder_path, folder)
-    #     if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
-    #         pdb_id = full_folder_path[-4:]
-    #         print(f"PDB id is {pdb_id}")
-    #         process_pdb_folder(full_folder_path, pdb_id)
-    #         print("DONE----------------------------------------------------------------------")
 
     graph = {
         0: [1, 4, 6],
@@ -385,3 +315,43 @@ def main(folder_path):
 
 if __name__ == "__main__":
     main(args.pdb_folder)
+
+'''
+output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/SD/{pdb_id}_hydrophobicity_fnc.csv'
+        with open(output_csv, mode='w', newline='') as file:
+
+            writer = csv.writer(file)
+            writer.writerow(['pdb_file', 'avg_dif', 'N', 'standard_deviation'])
+            for result in results:
+                writer.writerow(result)
+                
+def process_pdb_folder(full_folder_path, pdb_id):
+    results = []
+    relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
+    random_folder_path = os.path.join(full_folder_path, f"random_negatives/rand_{pdb_id}_relaxed")
+
+    paths = [relaxed_folder_path, random_folder_path]
+    for path in paths:
+        print(f"Path is {path}")
+        for filename in os.listdir(path):
+            print(f"Filename is {filename}")
+            if filename.endswith('.pdb') and ("NoH" not in filename):
+                pdb_path = os.path.join(path, filename)
+                print(f"Processing {filename}")
+                prot = Protein(pdb_path)
+                results.append((filename[:-4], (get_residues(prot))))
+            else:
+                print(f"File did not pass requirements.")
+
+def main(folder_path):
+    for folder in os.listdir(folder_path):
+        full_folder_path = os.path.join(folder_path, folder)
+        if folder.startswith("sampled_") and os.path.isdir(full_folder_path):
+            pdb_id = full_folder_path[-4:]
+            print(f"PDB id is {pdb_id}")
+            process_pdb_folder(full_folder_path, pdb_id)
+            print("DONE----------------------------------------------------------------------")
+
+if __name__ == "__main__":
+    main(args.pdb_folder)
+'''
