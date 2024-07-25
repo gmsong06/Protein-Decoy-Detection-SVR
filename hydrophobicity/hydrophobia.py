@@ -152,7 +152,7 @@ def create_graph(protein):
             tempB.append(True)
         hydroB[i] = tempB
 
-    return (graphA, graphB, hydroA, hydroB)
+    return graphA, graphB, hydroA, hydroB
     # print(graphA)
     # print(graphB)
     # print(hydroA)
@@ -348,9 +348,17 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 graphA, graphB, hydroA, hydroB = create_graph(prot)
 
 
-                results.append((filename[:-4], (get_final_island_data(graphA, hydroA))))
+                results.append((filename[:-4], (get_final_island_data(graphB, hydroB))))
             else:
                 print(f"File did not pass requirements.")
+
+    output_csv = f'/vast/palmer/scratch/ohern/sr2562/hydro_results/islands/{pdb_id}_hydro_islands.csv'
+    with open(output_csv, mode='w', newline='') as file:
+
+        writer = csv.writer(file)
+        writer.writerow(['pdb_file', 'score', 'weighted_avg', 'avg', 'standard_dev'])
+        for result in results:
+            writer.writerow(result)
 
 
 def main(folder_path):
@@ -362,40 +370,7 @@ def main(folder_path):
             process_pdb_folder(full_folder_path, pdb_id)
             print("DONE----------------------------------------------------------------------")
 
-    graph = {
-        0: [1, 4, 6],
-        1: [0, 2, 4, 7],
-        2: [1, 3, 8],
-        3: [2, 5, 9],
-        4: [0, 1],
-        5: [3, 6],
-        6: [0, 5],
-        7: [1, 8],
-        8: [2, 7, 9],
-        9: [3, 8]
-    }
-
-    hydro_reaction = {
-        0: True,
-        1: False,
-        2: False,
-        3: False,
-        4: True,
-        5: True,
-        6: True,
-        7: False,
-        8: True,
-        9: False,
-    }
-
-    dist_allowed = 2
-    find_islands(graph, dist_allowed, hydro_reaction)
-
-    print(get_final_island_data(graph, hydro_reaction))
-    print(score_fnc(get_final_island_data(graph, hydro_reaction)))
-    # print(islands)
-    # print(compute_distances(graph))
-
+    
 
 if __name__ == "__main__":
     main(args.pdb_folder)
