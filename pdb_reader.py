@@ -10,7 +10,7 @@ import pandas as pd
 import freesasa
 import matplotlib.pyplot as plt
 from residue import Residue
-import networkx as nx
+#import networkx as nx
 
 class Protein:
     def __init__(self, pdb_file_path):
