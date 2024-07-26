@@ -135,14 +135,16 @@ def create_graph(protein):
 
     for i in range(len(resA)):
         tempA = []
-        if resA[i] in listA:
-            tempA.append(True)
+
+        tempA.append(resA[i] in listA)
+
         hydroA[i] = tempA
 
     for i in range(len(resB)):
         tempB = []
-        if resB[i] in listB:
-            tempB.append(True)
+
+        tempB.append(resB[i] in listB)
+
         hydroB[i] = tempB
 
     return graphA, graphB, hydroA, hydroB
@@ -310,7 +312,6 @@ def get_max_dist(adj_list, hydro_reaction):
 
 def get_final_island_data(adj_list, hydro_reaction):
     max_dist = get_max_dist(adj_list, hydro_reaction)
-
     final_data = []
 
     for i in range(max_dist):
