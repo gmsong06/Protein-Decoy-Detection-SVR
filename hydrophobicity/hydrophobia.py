@@ -88,23 +88,16 @@ def get_hydro_hits(protein):
 
     hitsA = []
     hitsB = []
-
-    listA, listB, resA, resB, res_list = external_contacts(protein)
-
-    # print(f"Contacts in Chain A: {len(resA)} + Contacts in Chain B: {len(resB)}")
-    # if len(resA) == len(resB):
-    #     print("Lengths are equal. Proceeding to compare hydrophobicities.")
-    # print("-----------------------------------------------------")
-
-    for i in range(len(resA)):
-        resnameA = get_residue_name(protein, resA[i])
-    for i in range(len(resB)):
-        resnameB = get_residue_name(protein, resB[i])
-
+    
+    listA, listB, resA, resB, cont_list = external_contacts(protein)
+    
+    for res in cont_list:
+        resnameA = get_residue_name(protein, res[0])
+        resnameB = get_residue_name(protein, res[1])
         if abs(hydrophobicity_dict[resnameA] - hydrophobicity_dict[resnameB]) <= 0.2:
-            hitsA.append(resA[i])
-            hitsB.append(resB[i])
-
+            hitsA.append(res[0])
+            hitsB.append(res[1])
+    
     return hitsA, hitsB
 
 
