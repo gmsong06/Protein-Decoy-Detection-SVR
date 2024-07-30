@@ -11,8 +11,8 @@ parser.add_argument("--output_path", type=str, help="Path to output prediction f
 args = parser.parse_args()
 
 # Load the data
-train = pd.read_csv('final_data_groups_hydro.csv')
-test = pd.read_csv('final_data_capri_with_hydro.csv')
+train = pd.read_csv('final_data_normalized_hydro.csv')
+test = pd.read_csv('final_data_capri_normalized_hydro.csv')
 
 specific_column = 'DockQ'
 missing_in_specific_column = test[specific_column].isnull()
@@ -51,7 +51,7 @@ predictions = []
 
 pipeline = Pipeline([
     ('scaler', StandardScaler()),
-    ('svr', SVR(kernel='poly'))
+    ('svr', SVR(kernel='rbf'))
 ])
 
 print("BEGINNING TRAINING")
