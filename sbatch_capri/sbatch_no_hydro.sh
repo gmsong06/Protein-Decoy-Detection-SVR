@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=pi_ohern,gpu
-#SBATCH --job-name=no_z_svr_capri_all
+#SBATCH --job-name=no_z_no_hydro
 ##SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --ntasks-per-core=1
@@ -12,7 +12,7 @@
 #SBATCH -t 24:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=gmsong1978@gmail.com
-#SBATCH --output=no_z_svr_capri_all.out
+#SBATCH --output=no_z_no_hydro.out
 #SBATCH --requeue
 ##SBATCH --array=1-2
 
@@ -22,4 +22,4 @@ module load miniconda
 conda activate SVR
 
 # This command sends the tasklist to all in the array
-python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr.py --remove none --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions/no_z_final_all.csv
+python /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_svr.py --remove hydro --output_path /home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions/no_z_final_no_hydro.csv
