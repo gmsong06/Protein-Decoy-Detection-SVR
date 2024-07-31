@@ -3,16 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load data from CSV files
-methods = ['CAPRI_C_R_F', '0.01_0.1']
-
-# methods = ['CAPRI_C_R_F']
-
-# gamma = [0.001, 0.01, 0.1, 1, 10, 100]
-# c = [0.001, 0.01, 0.1, 1, 10, 100]
-
-# for i in range(len(gamma)):
-#     for j in range(len(gamma)):
-#         methods.append(f"{gamma[i]}_{c[j]}")
+methods = ['SVR', 'SVR_NO_HYDRO']
 
 data = {}
 for method in methods:
@@ -43,9 +34,9 @@ for i, method in enumerate(methods):
             label=method, color=colors[i % len(colors)], 
             markersize=10, markerfacecolor='none', markeredgewidth=1.5)
 
-# Plot the average Spearman correlation with error bars
-ax.errorbar(df_sorted['pdb_id'], df_sorted['average_spearman'], yerr=df_sorted['std_spearman'],
-            fmt='', linestyle='-', color='k', label='Average', capsize=5)
+# Plot the average Spearman correlation as a line
+ax.plot(df_sorted['pdb_id'], df_sorted['average_spearman'], 
+        linestyle='-', color='k', label='Average')
 
 # Customize the plot
 ax.set_xlabel('CAPRI Targets')
