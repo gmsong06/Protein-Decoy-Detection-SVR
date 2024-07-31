@@ -249,6 +249,9 @@ def compare_all_scores(targids, showplots):
     # if showplots:
     #     plt.show()
 
+import pandas as pd
+import matplotlib.pyplot as plt
+
 def plot_all_scores(targids, spearman_data):
     spearman_data = pd.read_csv(spearman_data)
 
@@ -261,11 +264,12 @@ def plot_all_scores(targids, spearman_data):
     spearman_data.sort_values(by=['Average'], inplace=True)
     # spearman_data.to_csv('capri_scoreset_difficulty.csv')
 
-    score_list = ['DeepRank-GNN-ESM', 'ZRank2', 'Rosetta', 'ITscorePP', 'VoroMQA', 'PyDock', 'SVR']
+    score_list = ['NO_HYDRO', 'WITH_HYDRO']
     colors = ('tab:red', 'tab:blue', 'tab:green', 'tab:cyan', 'tab:purple', 'tab:orange', 'tab:red')
-    shapes = ('d', '^', 's', 'o', '*', 'h', '*')
+    shapes = ('*', '^', 's', 'o', '*', 'h', '*')
 
-    fig = plt.figure(1, figsize=[10, 5.5])
+    # Adjust figure size here
+    fig = plt.figure(1, figsize=[18, 6])
     ax = fig.add_axes([0.1, 0.11, 0.6, 0.75])
     for ind, score in enumerate(score_list):
         ax.plot(range(len(targids)), spearman_data[score], color=colors[ind], marker=shapes[ind], markerfacecolor='None', linestyle='None', label=score, markersize=10)
@@ -279,6 +283,7 @@ def plot_all_scores(targids, spearman_data):
 
     plt.savefig('capri_scoreset_difficulty_spearman.png', dpi=300)
     plt.show()
+
 
 def compare_seeded_runs(targids, showplots):
     seeded_path_main = Path('C:/Users/brand/Documents/OHern_Lab/DeepRank_Retrain/lr5e-6_epoch_comparisons/nonshuffled_scores/')

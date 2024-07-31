@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load data from CSV files
-methods = ['SVR', 'SVR_NO_HYDRO']
+methods = ['SVR_NO_HYDRO']
 
 data = {}
 for method in methods:
@@ -49,7 +49,7 @@ ax.set_ylim(-1, .4)
 plt.xticks(rotation=45)
 
 # Save the plot
-plt.savefig('find_spearman/spearman_correlation_plot_capri.png')
+plt.savefig('find_spearman/spearman_correlation_plot_capri_no_hydro.png')
 
 # Show the plot
 plt.show()
