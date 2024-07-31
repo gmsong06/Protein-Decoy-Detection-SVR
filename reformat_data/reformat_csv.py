@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("data_folder", type=str, help="Path to data folder")
 args = parser.parse_args()
 
-capri = True
+capri = False
 
 def main():
     for data in os.listdir(args.data_folder):
