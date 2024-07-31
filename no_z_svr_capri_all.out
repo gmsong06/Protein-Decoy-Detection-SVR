@@ -5,18 +5,18 @@ BEGINNING TRAINING
 DONE TRAINING
 DONE PREDICTING
    MAE_Train  MSE_Train  R2_Train  MAE_Test  MSE_Test   R2_Test
-0   0.154796    0.04727   0.47585  0.193729  0.076226  0.218137
+0   0.167954   0.054017  0.401038  0.185806  0.055317  0.432605
                                   pdb_file  actual_DockQ  prediction
-0      complex.0_0_14_corrected_H_0001_T30         0.030    0.105035
-1      complex.0_0_16_corrected_H_0001_T30         0.044    0.109482
-2      complex.0_0_24_corrected_H_0001_T30         0.029    0.095778
-3      complex.0_0_25_corrected_H_0001_T30         0.048    0.113768
-4      complex.0_0_31_corrected_H_0001_T30         0.043    0.109642
+0      complex.0_0_14_corrected_H_0001_T30         0.030   -0.059521
+1      complex.0_0_16_corrected_H_0001_T30         0.044    0.074150
+2      complex.0_0_24_corrected_H_0001_T30         0.029   -0.118817
+3      complex.0_0_25_corrected_H_0001_T30         0.048   -0.003723
+4      complex.0_0_31_corrected_H_0001_T30         0.043    0.159079
 ...                                    ...           ...         ...
-21301  complex.9752_1_corrected_H_0001_T54         0.071    0.110153
-21302  complex.9768_3_corrected_H_0001_T54         0.026    0.126716
-21303  complex.9780_3_corrected_H_0001_T54         0.067    0.105280
-21304  complex.9780_5_corrected_H_0001_T54         0.072    0.114712
-21305  complex.9964_5_corrected_H_0001_T54         0.156    0.120781
+21301  complex.9752_1_corrected_H_0001_T54         0.071    0.044598
+21302  complex.9768_3_corrected_H_0001_T54         0.026    0.240643
+21303  complex.9780_3_corrected_H_0001_T54         0.067    0.164682
+21304  complex.9780_5_corrected_H_0001_T54         0.072    0.056284
+21305  complex.9964_5_corrected_H_0001_T54         0.156    0.299342
 
 [21306 rows x 3 columns]
