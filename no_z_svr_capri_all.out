@@ -1,6 +1,6 @@
 Series([], Name: pdb_file, dtype: object)
 ['DockQ', 'pdb_file', 'pdb_id']
-/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions/final_all.csv
+/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions/no_z_final_all.csv
 BEGINNING TRAINING
 DONE TRAINING
 DONE PREDICTING
