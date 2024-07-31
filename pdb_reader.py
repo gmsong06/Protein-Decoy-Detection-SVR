@@ -10,7 +10,7 @@ import pandas as pd
 import freesasa
 import matplotlib.pyplot as plt
 from residue import Residue
-import networkx as nx
+#import networkx as nx
 
 class Protein:
     def __init__(self, pdb_file_path):
@@ -108,9 +108,9 @@ class Protein:
                     res_in_contact_B.add(residue_ids_B[j])
 
         # Combine and sort residues in contact
-        all_residues_in_contact = sorted(res_in_contact_A | res_in_contact_B)
+        #all_residues_in_contact = sorted(res_in_contact_A | res_in_contact_B)
 
-        return all_residues_in_contact
+        return res_in_contact_A, res_in_contact_B
 
     def get_interface_residue_names(self):
         coordinates = []
