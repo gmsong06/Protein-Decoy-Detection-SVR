@@ -1,4 +1,4 @@
-from pdb_reader import Protein
+from hydrophobicity.pdb_reader import Protein
 import hydrophobicity.hydrophobia as hydrophobia
 import numpy as np
 import pandas as pd
@@ -7,9 +7,9 @@ import argparse
 import csv
 import math
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
+args = parser.parse_args()
 
 def score_fnc(islandsA, islandsB, hydro_hitsA, hydro_hitsB):
     # create dictionaries to map residues to their respective islands
@@ -59,15 +59,7 @@ def score_fnc(islandsA, islandsB, hydro_hitsA, hydro_hitsB):
     avg_patch_score = tot/len(patch_scores)
     return patch_alignment_score, chain_patch_consistency_score, avg_patch_score
 
-prot = Protein("/Users/smriti/Desktop/aeop/Protein-Decoy-Detection-SVR/complex.0_0_11_corrected_H_0001.pdb")
-graphA, graphB, hydroA, hydroB = hydrophobia.create_graph(prot)
-islandsA, final_island_dataA = hydrophobia.get_final_island_data(graphA, hydroA)
-islandsB, final_island_dataB = hydrophobia.get_final_island_data(graphB, hydroB)
-hydro_hitsA, hydro_hitsB = hydrophobia.get_hydro_hits(prot)
-score = score_fnc(islandsA, islandsB, hydro_hitsA, hydro_hitsB)
-print(score)
 
-'''
 def process_pdb_folder(full_folder_path, pdb_id):
     results = []
     relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
@@ -85,21 +77,20 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 graphA, graphB, hydroA, hydroB = hydrophobia.create_graph(prot)
                 islandsA, final_island_dataA = hydrophobia.get_final_island_data(graphA, hydroA)
                 islandsB, final_island_dataB = hydrophobia.get_final_island_data(graphB, hydroB)
-                hydro_hitsA, hydro_hitsB = hydrophobia.get_hydro_hits()
+                hydro_hitsA, hydro_hitsB = hydrophobia.get_hydro_hits(prot)
                 score = score_fnc(islandsA, islandsB, hydro_hitsA, hydro_hitsB)
 
                 results.append((filename[:-4], score))
             else:
                 print(f"File did not pass requirements.")
 
-    output_csv = f'/home/as4643/palmer_scratch/hydro_results/islands/{pdb_id}_hydro_islands.csv'
+    output_csv = f'/home/as4643/palmer_scratch/hydro_results/patches/{pdb_id}_hydro_patches.csv'
     with open(output_csv, mode='w', newline='') as file:
 
         writer = csv.writer(file)
         writer.writerow(["pdb_file", "patch_alignment_score", "chain_patch_consistency_score", "avg_patch_score"])
         for result in results:
             writer.writerow(result)
-
 
 def main(folder_path):
     for folder in os.listdir(folder_path):
@@ -114,4 +105,3 @@ def main(folder_path):
 
 if __name__ == "__main__":
     main(args.pdb_folder)
-'''

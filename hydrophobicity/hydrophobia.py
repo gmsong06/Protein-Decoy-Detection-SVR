@@ -1,4 +1,4 @@
-from pdb_reader import Protein
+from hydrophobicity.pdb_reader import Protein
 import numpy as np
 import pandas as pd
 import os
@@ -7,9 +7,9 @@ import csv
 from collections import deque, defaultdict
 import math
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
+args = parser.parse_args()
 
 
 def get_residue_name(protein, residue_id):
