@@ -7,9 +7,9 @@ import csv
 from collections import deque, defaultdict
 import math
 
-parser = argparse.ArgumentParser()
-parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
+# args = parser.parse_args()
 
 
 def get_residue_name(protein, residue_id):
@@ -274,7 +274,7 @@ def find_islands(adj_list, dist_allowed, hydro_reaction):
 
         islands.append(current_island)
 
-    return [len(island) for island in islands]
+    return islands, [len(island) for island in islands]
 
 
 def get_max_dist(adj_list, hydro_reaction):
@@ -317,13 +317,13 @@ def get_final_island_data(adj_list, hydro_reaction):
     for i in range(max_dist):
         dist_allowed = i + 1
 
-        islands = find_islands(adj_list, dist_allowed, hydro_reaction)
+        unused, islands = find_islands(adj_list, dist_allowed, hydro_reaction)
 
         final_data.append((dist_allowed, islands))
 
-    return final_data
+    return unused, final_data
 
-
+'''
 def process_pdb_folder(full_folder_path, pdb_id):
     results = []
     relaxed_folder_path = os.path.join(full_folder_path, f"{pdb_id}_relaxed")
@@ -340,7 +340,7 @@ def process_pdb_folder(full_folder_path, pdb_id):
                 prot = Protein(pdb_path)
                 graphA, graphB, hydroA, hydroB = create_graph(prot)
 
-                final_island_data = get_final_island_data(graphA, hydroA)
+                unused, final_island_data = get_final_island_data(graphA, hydroA)
                 
                 score = score_fnc(final_island_data)
 
@@ -372,3 +372,4 @@ def main(folder_path):
 
 if __name__ == "__main__":
     main(args.pdb_folder)
+'''
