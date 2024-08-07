@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=week
-#SBATCH --job-name=9
+#SBATCH --job-name=10
 ##SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --ntasks-per-core=1
@@ -12,7 +12,7 @@
 #SBATCH -t 168:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=gmsong1978@gmail.com
-#SBATCH --output=/vast/palmer/scratch/ohern/as4643/hydro_results/islands2/out_files/9.out
+#SBATCH --output=/vast/palmer/scratch/ohern/as4643/hydro_results/patches/out_files/10.out
 #SBATCH --requeue
 ##SBATCH --array=1-2
 
@@ -23,4 +23,4 @@ conda init
 conda activate SVR
 
 # This command sends the tasklist to all in the array
-python -m hydrophobicity.hydrophobia /vast/palmer/scratch/ohern/as4643/Decoys/Supersampled_structures/groups/9/
+python -m hydrophobicity.compare_chains /vast/palmer/scratch/ohern/as4643/Decoys/Supersampled_structures/groups/10/
