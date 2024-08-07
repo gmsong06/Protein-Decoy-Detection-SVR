@@ -23,9 +23,13 @@ for pdb_id, group in grouped:
     # Create scatter plot
     plt.figure(figsize=(8, 6))
     plt.scatter(rsm_values, dockq_values, edgecolors='black', facecolors='none')
-    plt.title(f'{pdb_id} (Spearman Correlation: {correlation:.2f})')
-    plt.xlabel('RSM')
-    plt.ylabel('DockQ')
+    plt.title(f'{pdb_id} (Spearman Correlation: {correlation:.2f})', fontsize=20)
+    plt.xlabel('RSM', fontsize=20)
+    plt.ylabel('DockQ', fontsize=20)
+
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+
     plt.grid(False)
     
     # Save each plot as a file

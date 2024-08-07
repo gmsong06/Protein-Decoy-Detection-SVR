@@ -255,31 +255,69 @@ import matplotlib.pyplot as plt
 def plot_all_scores(targids, spearman_data):
     spearman_data = pd.read_csv(spearman_data)
 
-    # print(spearman_data)
-    # avg_spear = spearman_data.mean(axis=1)
-    # avg_std = spearman_data.std(axis=1)
-
-    # spearman_data['Average'] = avg_spear
-    # spearman_data['STD'] = avg_std
     spearman_data.sort_values(by=['Average'], inplace=True)
-    # spearman_data.to_csv('capri_scoreset_difficulty.csv')
 
-    score_list = ['NO_HYDRO', 'WITH_HYDRO']
-    colors = ('tab:red', 'tab:blue', 'tab:green', 'tab:cyan', 'tab:purple', 'tab:orange', 'tab:red')
-    shapes = ('*', '^', 's', 'o', '*', 'h', '*')
+    score_list = ['DeepRank-GNN-ESM', 'ZRank2', 'Rosetta', 'ITscorePP', 'VoroMQA', 'PyDock', 'SVR']
+    colors = ['tab:red', 'tab:blue', 'tab:green', 'tab:cyan', 'gold', 'tab:orange', 'tab:pink']  # Unique color for SVR
+    shapes = ['*', '^', 's', 'o', '*', 'h', 'D']  # Unique shape for SVR
 
     # Adjust figure size here
     fig = plt.figure(1, figsize=[18, 6])
     ax = fig.add_axes([0.1, 0.11, 0.6, 0.75])
+
     for ind, score in enumerate(score_list):
-        ax.plot(range(len(targids)), spearman_data[score], color=colors[ind], marker=shapes[ind], markerfacecolor='None', linestyle='None', label=score, markersize=10)
-    ax.errorbar(range(len(targids)), spearman_data['Average'], yerr=spearman_data['STD'], color='k', marker='.', label='Average', linewidth=.75)
-    ax.set_xlabel('Target', fontsize=14)
-    ax.set_ylabel(r'$\rho$', fontsize=14)
+        # Fill the SVR marker and leave others unfilled
+        if score == 'SVR':
+            ax.plot(
+                range(len(targids)),
+                spearman_data[score],
+                color=colors[ind],
+                marker=shapes[ind],
+                linestyle='None',
+                label=score,
+                markersize=10,  # Larger size for SVR
+                markeredgewidth=1,  # Thicker edge for SVR
+                markeredgecolor='black',  # Black edge color for SVR
+                markerfacecolor=colors[ind]  # Filled marker for SVR
+            )
+        else:
+            ax.plot(
+                range(len(targids)),
+                spearman_data[score],
+                color=colors[ind],
+                marker=shapes[ind],
+                linestyle='None',
+                label=score,
+                markersize=10,
+                markerfacecolor='None'  # Unfilled markers for others
+            )
+
+    ax.errorbar(
+        range(len(targids)),
+        spearman_data['Average'],
+        yerr=spearman_data['STD'],
+        color='k',
+        marker='.',
+        label='Average',
+        linewidth=.75
+    )
+
+    ax.set_xlabel('Target', fontsize=18)
+    ax.set_ylabel(r'$\rho$', fontsize=18)
     ax.legend(loc='upper right', fontsize=12, bbox_to_anchor=(1.45, 1))
-    ax.hlines([-1, -0.8, -0.6, -0.4, -0.2, 0], 0, len(targids)-1, colors='tab:gray', linestyles='dotted', linewidth=.5)
+    ax.hlines(
+        [-1, -0.8, -0.6, -0.4, -0.2, 0],
+        0,
+        len(targids) - 1,
+        colors='tab:gray',
+        linestyles='dotted',
+        linewidth=.5
+    )
     ax.set_xticks(range(len(targids)))
-    ax.set_xticklabels(spearman_data.index)
+    ax.set_xticklabels(spearman_data.index, fontsize=18)
+
+    # Make y-axis ticks larger
+    ax.tick_params(axis='y', labelsize=18)
 
     plt.savefig('capri_scoreset_difficulty_spearman.png', dpi=300)
     plt.show()
@@ -318,7 +356,7 @@ def compare_seeded_runs(targids, showplots):
     spearmans['Average'] = spearmans.mean(axis=1)
     spearmans.sort_values(by=['Average'], inplace=True)
 
-    colors = ('tab:pink', 'tab:purple', 'tab:red', 'tab:green', 'tab:orange', 'tab:blue')
+    colors = ('tab:pink', 'tab:gold', 'tab:red', 'tab:green', 'tab:orange', 'tab:blue')
     shapes = ('d', 'X', 'X', 'X', 'X', 'X')
 
     fig = plt.figure(1, figsize=[8, 5])
@@ -342,7 +380,7 @@ def compare_seeded_runs(targids, showplots):
 def main():
     targids=['T30','T32','T35','T37','T39','T41','T46','T47','T50','T53','T54'] #'T29',
     # compare_all_scores(targids,showplots=True)
-    plot_all_scores(targids, 'capri_scoreset_difficulty.csv')
+    plot_all_scores(targids, 'capri_scoreset_difficulty_all.csv')
     #compare_seeded_runs(targids,showplots=True)
 
         
