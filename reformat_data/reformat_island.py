@@ -14,13 +14,12 @@ def main():
             csv_path = os.path.join(args.data_folder, data)
             df = pd.read_csv(csv_path)
 
-            if type(df['patch_alignment_score']) == str:
-                df[['patch_alignment_score', 'chain_patch_consistency_score', 'avg_patch_score']] = df['patch_alignment_score'].str.extract(r'\(([^,]+), ([^,]+), ([^,]+)\)')
+            df[['patch_alignment_score', 'chain_patch_consistency_score', 'avg_patch_score']] = df['patch_alignment_score'].str.extract(r'\(([^,]+), ([^,]+), ([^,]+)\)')
 
-                # Convert the new columns to float
-                df['patch_alignment_score'] = df['patch_alignment_score'].astype(float) * 100
-                df['chain_patch_consistency_score'] = df['chain_patch_consistency_score'].astype(float) * 100
-                df['avg_patch_score'] = df['avg_patch_score'].astype(float) * 100
+            # Convert the new columns to float
+            df['patch_alignment_score'] = df['patch_alignment_score'].astype(float) * 100
+            df['chain_patch_consistency_score'] = df['chain_patch_consistency_score'].astype(float) * 100
+            df['avg_patch_score'] = df['avg_patch_score'].astype(float) * 100
 
 
             # Save the modified DataFrame to a new CSV file
