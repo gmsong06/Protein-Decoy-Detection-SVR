@@ -26,7 +26,7 @@ def process_folder(folder_path, full_data, output_folder, spearman_output_file):
 
             for _, row in data.iterrows():
                 pdb_file = row['pdb_file']
-                weighted_avg = row['avg_patch_score']
+                weighted_avg = row['patch_alignment_score']
                 
                 # Find the matching row in full_data
                 matching_row = full_data[full_data['pdb_file'] == pdb_file]
@@ -41,12 +41,12 @@ def process_folder(folder_path, full_data, output_folder, spearman_output_file):
                 spearman_corr, _ = spearmanr(weighted_avg_values, dockQ_values)
                 spearman_results.append({'filename': filename, 'spearman_corr': spearman_corr})
             
-            # Plotting avg_patch_score vs dockQ for the current file
+            # Plotting patch_alignment_score vs dockQ for the current file
             print("Plotting")
             plt.figure(figsize=(10, 6))
             plt.scatter(weighted_avg_values, dockQ_values, facecolors='none', edgecolors='black')
-            plt.title(f'avg_patch_score vs DockQ for {filename}')
-            plt.xlabel('avg_patch_score')
+            plt.title(f'patch_alignment_score vs DockQ for {filename}')
+            plt.xlabel('patch_alignment_score')
             plt.ylabel('DockQ')
             plt.grid(False)
 
@@ -72,8 +72,8 @@ def process_folder(folder_path, full_data, output_folder, spearman_output_file):
 
 # Specify the folder containing the CSV files, the output folder for plots, and the output file for Spearman correlations
 csv_folder_path = '/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/all_csvs/islands'
-output_folder_path = '/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/spearman_plots/islands/avg_patch_score'
-spearman_output_file = '/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/spearman_plots/islands/avg_patch_score/spearman_results.csv'
+output_folder_path = '/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/spearman_plots/islands/patch_alignment_score'
+spearman_output_file = '/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/spearman_plots/islands/patch_alignment_score/spearman_results.csv'
 
 # Process the folder, create plots, and save Spearman correlations
 process_folder(csv_folder_path, full_data, output_folder_path, spearman_output_file)
