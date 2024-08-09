@@ -1,5 +1,0 @@
-['DockQ', 'pdb_file', 'pdb_id']
-/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/predictions_capri_grid_search/all.csv
-BEGINNING GRID SEARCH
-Fitting 5 folds for each of 384 candidates, totalling 1920 fits
-slurmstepd: error: *** JOB 60049166 ON r915u13n01 CANCELLED AT 2024-07-16T14:26:38 ***
