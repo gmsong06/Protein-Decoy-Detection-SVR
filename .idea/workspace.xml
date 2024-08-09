@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="c1aee24d-a198-48f8-8e57-203ce23541e2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Protein-Decoy-Detection-SVR.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Protein-Decoy-Detection-SVR.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hydrophobicity/hydrophobia.py" beforeDir="false" afterPath="$PROJECT_DIR$/hydrophobicity/hydrophobia.py" afterDir="false" />
-    </list>
+    <list default="true" id="c1aee24d-a198-48f8-8e57-203ce23541e2" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,9 +13,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2jkh2mFbXzwGokMscTONmpKjrLd" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -25,7 +24,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Merging hydrophobicity",
+    "git-widget-placeholder": "hydro__corr",
     "last_opened_file_path": "/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR"
   }
 }]]></component>
