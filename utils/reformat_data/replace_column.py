@@ -1,9 +1,12 @@
+# Not in use
+
 import os
 import pandas as pd
 
+
 def merge_csv_files(directory, output_file):
     all_dfs = []
-    
+
     # Traverse the directory and read the CSV files
     for file_name in os.listdir(directory):
         file_path = os.path.join(directory, file_name)
@@ -26,6 +29,7 @@ def merge_csv_files(directory, output_file):
     else:
         print("No CSV files found or all CSV files are empty")
 
+
 def merge_with_additional_csv(combined_csv_file, additional_csv_file, output_file):
     try:
         combined_df = pd.read_csv(combined_csv_file)
@@ -42,10 +46,11 @@ def merge_with_additional_csv(combined_csv_file, additional_csv_file, output_fil
     except Exception as e:
         print(f"Error merging DataFrames: {e}")
 
+
 if __name__ == "__main__":
     directory = 'hydro_norm_temp'  # Replace with the path to your directory
-    combined_output_file = 'combined_norm_hydro.csv'     # Replace with your desired output file name
-    
+    combined_output_file = 'combined_norm_hydro.csv'  # Replace with your desired output file name
+
     additional_csv_file = 'final_data_capri_with_hydro.csv'  # Replace with the path to your additional CSV file
     final_output_file = 'final_merged_data.csv'  # Replace with your desired final output file name
 

@@ -1,7 +1,6 @@
 import argparse
 import pandas as pd
 from scipy.stats import spearmanr
-import numpy as np
 import matplotlib.pyplot as plt
 import os
 
@@ -12,6 +11,7 @@ parser.add_argument("output_path", type=str, help="Path to output figure")
 parser.add_argument("output_csv_path", type=str, help="Path to output csv")
 
 args = parser.parse_args()
+
 
 def main():
     for file in os.listdir(args.predictions_path):
@@ -24,24 +24,24 @@ def main():
         pred = df["prediction"]
 
         pdb_dict = {pdb_id: df[df['pdb_id'] == pdb_id] for pdb_id in df['pdb_id'].unique()}
-        
+
         print("pdb_ids:", pdb_dict.keys())
-        
+
         # Initialize a list to store results
         results = []
 
         for pdb_id, pdb_df in pdb_dict.items():
             print(f"PDB ID: {pdb_id}")
-            
+
             dockq_scores = []
             pred_scores = []
 
             for index, row in pdb_df.iterrows():
                 dockq_scores.append(row['actual_DockQ'])
                 pred_scores.append(row['prediction'])
-            
+
             spearman_corr, spearman_p = spearmanr(dockq_scores, pred_scores)
-            
+
             # Append results to the list
             results.append({'pdb_id': pdb_id, 'spearman_correlation': spearman_corr})
 
@@ -56,7 +56,7 @@ def main():
             ax.set_xlabel('Predicted DockQ', fontsize=12)
             ax.set_ylabel('DockQ', fontsize=12)
             ax.set_title(f'Spearman Correlation: {spearman_corr:.2f}', fontsize=12)
-            
+
             fig.savefig(os.path.join(output_dir, f'{pdb_id}.png'))
             plt.close(fig)  # Close the figure to avoid memory issues
 
@@ -66,6 +66,7 @@ def main():
         if not os.path.exists(output_csv_dir):
             os.makedirs(output_csv_dir)
         results_df.to_csv(os.path.join(output_csv_dir, f'{extracted_string}.csv'), index=False)
+
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,8 @@
-import pandas as pd
-import numpy as np
+# Normalizes data with z-score
 
-df = pd.read_csv("final_data_capri_with_hydro.csv")
+import pandas as pd
+
+df = pd.read_csv("data/final_data_capri.csv")
 
 columns_to_normalize = ['contacts', 'rsm', 'flatness', 'hydro']
 
@@ -13,4 +14,4 @@ df[columns_to_normalize] = (df[columns_to_normalize] - mean) / std
 
 # Display the updated DataFrame
 
-df.to_csv("final_data_capri_normalized.csv", index=False)
+df.to_csv("data/final_data_capri_normalized.csv", index=False)

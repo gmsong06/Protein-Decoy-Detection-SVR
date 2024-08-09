@@ -4,13 +4,12 @@ import Bio.PDB.PDBParser
 import pandas as pd
 from DockQ.DockQ import load_PDB, run_on_all_native_interfaces
 import Bio.PDB
-import os
-import sys
 
 with open('missing_pdb_files.txt', 'r') as file:
     lines = file.readlines()
 
 lines = [line.strip() for line in lines]
+
 
 def get_chain_ids(structure):
     """
@@ -28,8 +27,9 @@ def get_chain_ids(structure):
                 return chain_id_1, chain_id_2
             for residue in chain:
                 for atom in chain:
-                    atoms +=1 
+                    atoms += 1
     return [chain_id_1, chain_id_2]
+
 
 def modify_chain_ids(pdb_filename, current_chain_ids, desired_chain_ids, output_filename):
     """
@@ -44,7 +44,7 @@ def modify_chain_ids(pdb_filename, current_chain_ids, desired_chain_ids, output_
     Returns:
     None
     """
-    # Ensure that the current and desired chain IDs have the same length
+
     if len(current_chain_ids) != 2 or len(desired_chain_ids) != 2:
         raise ValueError("Both current_chain_ids and desired_chain_ids must be lists of two elements.")
 
@@ -68,11 +68,6 @@ def modify_chain_ids(pdb_filename, current_chain_ids, desired_chain_ids, output_
 def main():
     scores = {}
     for file in lines:
-        #print(file[-3:])
-        #print(os.path.dirname(file))
-        #folder_name = os.path.basename(os.path.dirname(f"{file[:-4]}.pdb"))
-        #print(folder_name)
-        #sys.exit()
         pdb_id = file[-3:]
         file_name = file[:-4]
         type = "random"
@@ -87,19 +82,20 @@ def main():
         elif file_name.startswith("random"):
             print(file_name)
             model_path = f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/sampled_{pdb_id}/random_negatives/random_{pdb_id}_relaxed/{file_name}.pdb"
-        
+
         native = load_PDB(f"/home/as4643/palmer_scratch/Decoys/Capri_SuperSampled/targets/Target{pdb_id[-2:]}.pdb")
         print(pdb_id[-2:])
         model = load_PDB(model_path)
 
         structure = Bio.PDB.PDBParser(QUIET=True).get_structure('protein', model_path)
-    
+
         chains = get_chain_ids(structure)
 
         chain_map = {chains[0]: chains[0], chains[1]: chains[1]}
         print(chain_map)
         print(run_on_all_native_interfaces(model, native, chain_map=chain_map)[0])
-        dockq_score = round(run_on_all_native_interfaces(model, native, chain_map=chain_map)[0][(chains[0], chains[1])]['DockQ'], 3)
+        dockq_score = round(
+            run_on_all_native_interfaces(model, native, chain_map=chain_map)[0][(chains[0], chains[1])]['DockQ'], 3)
         scores[file_name + f"_{pdb_id}"] = dockq_score
         print(dockq_score)
 
@@ -107,6 +103,7 @@ def main():
     scores_df = pd.DataFrame(list(scores.items()), columns=['Decoy', 'DockQ'])
     scores_df.to_csv("missing_dockq_scores.csv", index=False)
     print("CSV file has been created successfully.")
+
 
 if __name__ == "__main__":
     main()

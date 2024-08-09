@@ -1,3 +1,4 @@
+# SVR for training with 84, testing on capri
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline

@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("pdb_folder", type=str, help="Path to the folder containing PDB files")
 args = parser.parse_args()
 
+
 def get_residue_name(prot, residue_id):
     for model in prot.structure:
         for chain in model:
@@ -16,9 +17,10 @@ def get_residue_name(prot, residue_id):
                     return residue.resname
     return None
 
+
 def get_residues(prot):
     coordinates = []
-    atom_names = []                
+    atom_names = []
     chains = []
     residue_ids = []
     for model in prot.structure:
@@ -56,12 +58,12 @@ def get_residues(prot):
             residue_ids_A.append(residue_ids[i])
         elif ((chains[i] == lst[1]) and (atom_names[i] == "not_hydrogen")):
             listB.append(coordinates[i])
-            residue_ids_B.append(residue_ids[i])      
+            residue_ids_B.append(residue_ids[i])
 
     dist_thresh = 5
     res_in_contact = []
-    for i,posA in enumerate(listA):
-        for j,posB in enumerate(listB):
+    for i, posA in enumerate(listA):
+        for j, posB in enumerate(listB):
             if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
                 cont = [residue_ids_A[i], residue_ids_B[j]]
                 if cont not in res_in_contact:
@@ -77,7 +79,7 @@ def process_pdb_folder(full_folder_path, pdb_id, hdf5_file):
 
     paths = [relaxed_folder_path, random_folder_path]
     pdb_group = hdf5_file.create_group(pdb_id)
-    
+
     for path in paths:
         print(f"Path is {path}")
         for filename in os.listdir(path):
@@ -87,8 +89,8 @@ def process_pdb_folder(full_folder_path, pdb_id, hdf5_file):
                 print(f"Processing {filename}")
                 protein = Protein(pdb_path)
                 res_list = get_residues(protein)
-                resA=[]
-                resB=[]
+                resA = []
+                resB = []
                 for res in res_list:
                     resA.append(res[0])
                     resB.append(res[1])
@@ -104,8 +106,6 @@ def process_pdb_folder(full_folder_path, pdb_id, hdf5_file):
                 print(f"File did not pass requirements.")
 
 
-        
-
 def main(folder_path):
     main_folder_name = os.path.basename(os.path.normpath(folder_path))
     hdf5_filename = f"{main_folder_name}_all_contacts.hdf5"
@@ -120,7 +120,6 @@ def main(folder_path):
                 print(f"PDB id is {pdb_id}")
                 process_pdb_folder(full_folder_path, pdb_id, hdf5_file)
                 print("DONE----------------------------------------------------------------------")
-
 
 
 if __name__ == "__main__":

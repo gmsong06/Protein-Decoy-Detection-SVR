@@ -1,14 +1,3 @@
-import re
-import Bio.PDB
-from Bio.PDB.PDBIO import Select
-import os
-import argparse
-import numpy as np
-from multiprocessing import Pool, cpu_count
-from collections import defaultdict
-import pandas as pd
-import freesasa
-
 class Residue:
     def __init__(self, residue, chain):
         self.residue = residue

@@ -1,16 +1,11 @@
-import re
 import Bio.PDB
-from Bio.PDB.PDBIO import Select
-import os
-import argparse
 import numpy as np
-from multiprocessing import Pool, cpu_count
 from collections import defaultdict
 import pandas as pd
 import freesasa
 import matplotlib.pyplot as plt
 from residue import Residue
-#import networkx as nx
+
 
 class Protein:
     def __init__(self, pdb_file_path):
@@ -47,9 +42,8 @@ class Protein:
                 elif chain.id != chain_id_1:
                     chain_id_2 = chain.id
                     return chain_id_1, chain_id_2
-        
-        return [chain_id_1, chain_id_2]
 
+        return [chain_id_1, chain_id_2]
 
     def get_atom_coords(self, chain_id: str):
         coords = []
@@ -65,8 +59,7 @@ class Protein:
             return coords
         else:
             return "Invalid chain ID"
-        
-    
+
     def get_interface_residues_org(self):
         coordinates = []
         chains = []
@@ -128,7 +121,7 @@ class Protein:
                             chains.append(chain_id)
                             coordinates.append(atom.coord)
                             residue_names.append(residue_name)
-        
+
         if not chains:
             return [], []
 
@@ -143,7 +136,7 @@ class Protein:
             else:
                 listB.append(coordinates[i])
                 residue_names_B.append(residue_names[i])
-        
+
         dist_thresh = 5
         res_in_contact_A = []
         res_in_contact_B = []
@@ -153,9 +146,8 @@ class Protein:
                 if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
                     res_in_contact_A.append(residue_names_A[i])
                     res_in_contact_B.append(residue_names_B[j])
-        
+
         return res_in_contact_A, res_in_contact_B
-    
 
     def get_interface_residues(self):
         coordinates = []
@@ -172,7 +164,7 @@ class Protein:
                             chains.append(chain_id)
                             coordinates.append(atom.coord)
                             residues.append(residue)
-        
+
         if not chains:
             return [], []
 
@@ -187,7 +179,7 @@ class Protein:
             else:
                 listB.append(coordinates[i])
                 residues_B.append(residues[i])
-        
+
         dist_thresh = 5
         res_in_contact_A = []
         res_in_contact_B = []
@@ -197,9 +189,8 @@ class Protein:
                 if np.linalg.norm(np.array(posA) - np.array(posB)) <= dist_thresh:
                     res_in_contact_A.append(residues_A[i])
                     res_in_contact_B.append(residues_B[j])
-        
+
         return res_in_contact_A, res_in_contact_B
-                
 
     def get_interface_atom_ids(self):
         # returns list of all the names of the ids of all atoms in the interface
@@ -228,7 +219,7 @@ class Protein:
         for chain_id, listB in coordinates_dict.items():
             if chain_id == first_chain:
                 continue
-            
+
             residue_ids_B = residue_ids_dict[chain_id]
 
             for i, posA in enumerate(listA):
@@ -240,7 +231,6 @@ class Protein:
         # Convert the set to a sorted list
         return sorted(atoms_in_contact)
 
-    
     def get_interface_atom_names(self):
         # returns names of atoms at interface
         coordinates = []
@@ -256,7 +246,7 @@ class Protein:
                         atom_names.append(atom.get_name())
                         coordinates.append(atom.coord)
                         residue_ids.append(residue.id[1])
- 
+
         listA = []
         listB = []
         residue_ids_A = []
@@ -273,8 +263,8 @@ class Protein:
         atoms_in_contact = []
         A_positions = []
         B_positions = []
-        for i,posA in enumerate(listA):
-            for j,posB in enumerate(listB):
+        for i, posA in enumerate(listA):
+            for j, posB in enumerate(listB):
                 if np.linalg.norm(np.array(posA) - np.array(posB)) <= 5:
                     A_position = i
                     A_positions.append(A_position)
@@ -290,7 +280,6 @@ class Protein:
             atoms_in_contact.append(atom_name)
 
         return atoms_in_contact
-    
 
     def get_interface_charges(self):
         # Initialize data structures
@@ -355,7 +344,6 @@ class Protein:
 
         return charges_in_contact
 
-            
     def get_hydrophobicities(self):
         # Initialize data structures
         coordinates = []
@@ -410,9 +398,9 @@ class Protein:
         # Hydrophobicity dictionary
         hydrophobicity_dict = {
             "ARG": 0.72002943, "ASP": 0.75367063, "GLU": 0.87591947, "LYS": 1, "ASN": 0.67819213,
-            "GLN": 0.72278272, "PRO": 0.65123555, "HIS":  0.48907553, "SER": 0.52365422, "THR": 0.47798833,
+            "GLN": 0.72278272, "PRO": 0.65123555, "HIS": 0.48907553, "SER": 0.52365422, "THR": 0.47798833,
             "GLY": 0.46477639, "TYR": 0.21646225, "ALA": 0.30953653, "CYS": 0, "MET": 0.18184843,
-            "TRP":  0.14290738, "VAL": 0.10992156, "PHE": 0.0814021, "LEU": 0.10211201, "ILE": 0.06280283
+            "TRP": 0.14290738, "VAL": 0.10992156, "PHE": 0.0814021, "LEU": 0.10211201, "ILE": 0.06280283
         }
 
         # Calculate hydrophobicities
@@ -438,9 +426,8 @@ class Protein:
                 res_dict[B][A] += 1
             else:
                 print(f"EITHER {A} OR {B} IS NOT STANDARD")
-        
+
         return res_dict
-    
 
     def get_all_interface_contact_residue_ids(self):
         amino_acids = [
@@ -460,13 +447,9 @@ class Protein:
                 res_dict[B][A] += 1
             else:
                 print(f"EITHER {A} OR {B} IS NOT STANDARD")
-        
-        return res_dict
-    
 
-    
-    
-    
+        return res_dict
+
     def get_interface_binding_probabilities(self):
         res_dict = self.get_all_interface_contact_residue_names()
 
@@ -494,9 +477,9 @@ class Protein:
             if A in amino_acids and B in amino_acids:
                 res_dict[res_name_A[i]] += 1
                 res_dict[res_name_B[i]] += 1
-        
+
         return res_dict
-    
+
     def get_interface_sa(self):
         def findUnboundSASA(pdb_path: str):
             structures = freesasa.structureArray(pdb_path, {'separate-chains': True})
@@ -527,7 +510,8 @@ class Protein:
             result = freesasa.calc(structure)
             return result.totalArea()
 
-        return (sum(findUnboundSASA(self.pdb_file_path)) - findBoundSASA(self.pdb_file_path)) / sum(findUnboundSASA(self.pdb_file_path))
+        return (sum(findUnboundSASA(self.pdb_file_path)) - findBoundSASA(self.pdb_file_path)) / sum(
+            findUnboundSASA(self.pdb_file_path))
 
 
 class Complex:
@@ -600,7 +584,7 @@ class Complex:
         U = np.dot(V, W)
         P = np.dot(P, U)
 
-        return np.sqrt(np.sum((P - Q)**2) / len(P))
+        return np.sqrt(np.sum((P - Q) ** 2) / len(P))
 
     @staticmethod
     def calculate_rmsd(dict1, dict2):
@@ -631,15 +615,8 @@ class Complex:
 
         rmsd_value = rmsd_sum / (len(common_keys) * 2)  # 2 for pairs
         return rmsd_value
-    
+
+
 if __name__ == "__main__":
     protein = Protein('targets/1acb_complex_H.pdb')
     print(protein.get_interface_sa())
-    #print(protein.get_chain_ids())
-    #print(protein.get_atom_coords('E'))
-    #print(protein.get_interface_residues())
-    #print(protein.get_interface_atom_ids())
-    #print(protein.get_interface_atom_names()) 
-    # print(protein.get_residue_frequency())
-    #print(protein.get_hydrophobicities())
-

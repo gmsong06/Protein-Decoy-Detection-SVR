@@ -11,9 +11,10 @@ args = parser.parse_args()
 
 dockq = pd.read_csv("final_data_capri_with_hydro.csv")
 
+
 def main(folder_path):
     results = []
-    for file in os.listdir(folder_path): 
+    for file in os.listdir(folder_path):
         file_path = os.path.join(folder_path, file)
         df = pd.read_csv(file_path)
         pdb_id = file[6:9]
@@ -25,10 +26,10 @@ def main(folder_path):
                 dockq_scores.append(row['DockQ'])
         for index, row in df.iterrows():
             hydro_scores.append(row['normalized_hydrophobicity_contacts'])
-        
+
         print(dockq_scores)
         spearman_corr, spearman_p = spearmanr(dockq_scores, hydro_scores)
-        
+
         # Append results to the list
         results.append({'pdb': pdb_id, 'spearman_correlation': spearman_corr})
 
@@ -45,6 +46,7 @@ def main(folder_path):
 
     results_df = pd.DataFrame(results)
     results_df.to_csv('contacts_hydro_spearman.csv', index=False)
-    
+
+
 if __name__ == "__main__":
     main(args.pdb_folder)

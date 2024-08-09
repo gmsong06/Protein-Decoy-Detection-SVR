@@ -1,3 +1,5 @@
+# Not in use
+
 import pandas as pd
 import os
 
@@ -6,6 +8,7 @@ main_file = pd.read_csv("combined_data.csv")
 
 # Create a set of unique pdb_file prefixes
 unique_pdb_prefixes = set(main_file['pdb_file'].str[-4:])
+
 
 # Function to process DockQ scores
 def process_dockq_scores(folder_path):
@@ -21,7 +24,7 @@ def process_dockq_scores(folder_path):
             def modify_decoy(decoy):
                 if not decoy.endswith(f"_corrected_H_0001_{pdb_id}"):
                     decoy += f"_corrected_H_0001_{pdb_id}"
-                
+
                 if "random" in filename:
                     if decoy.startswith('sampled'):
                         decoy = "random" + decoy[len("sampled"):].lstrip()
@@ -52,6 +55,7 @@ def process_dockq_scores(folder_path):
 
     # Save the combined data to a new file
     main_file.to_csv('combined_data_3.csv', index=False)
+
 
 # Run the process_dockq_scores function
 if __name__ == "__main__":

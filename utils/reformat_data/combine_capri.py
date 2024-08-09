@@ -1,10 +1,13 @@
+# Not in use
+
 import pandas as pd
 import os
+
 
 def main(folder_path):
     # Get all files in the folder
     files = os.listdir(folder_path)
-    
+
     # Dictionary to store pairs of CSV files by PDB ID
     pdb_files = {}
 
@@ -37,6 +40,7 @@ def main(folder_path):
             print(f'Combined CSV for {pdb_id} saved as {combined_file_path}')
         else:
             print(f'Missing files for PDB ID {pdb_id}. Ensure both random and sampled files are present.')
+
 
 if __name__ == "__main__":
     main("/home/as4643/palmer_scratch/Protein-Decoy-Detection-SVR/capri_csvs/dockQ")

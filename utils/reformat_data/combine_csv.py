@@ -1,14 +1,19 @@
 import pandas as pd
 import os
 
+
 def main(full_dir: str):
+    """
+    Combines CSV files from each subfolder
+
+    """
+
     all_contacts_dfs = []
     interface_rsm_dfs = []
     interface_flatness_dfs = []
     hydrophobicity_dfs = []
     bsa_dfs = []
 
-    # Traverse the directory and read the CSV files
     for data_category in os.listdir(full_dir):
         data_category_path = os.path.join(full_dir, data_category)
         if os.path.isdir(data_category_path):
@@ -48,21 +53,22 @@ def main(full_dir: str):
         bsa_df = next((df for df in bsa_dfs if pdb_file in df['pdb_file'].values), None)
 
         # Debugging information
-        print(f"Processing set {idx+1}:")
+        print(f"Processing set {idx + 1}:")
         print(f"  PDB file: {pdb_file}")
         print(f"  Found interface_rsm_df: {'Yes' if interface_rsm_df is not None else 'No'}")
         print(f"  Found interface_flatness_df: {'Yes' if interface_flatness_df is not None else 'No'}")
-        # print(f"  Found hydrophobicity_df: {'Yes' if hydrophobicity_df is not None else 'No'}")
 
         if interface_rsm_df is not None and interface_flatness_df is not None and bsa_df is not None:
-            print(f"Merging set {idx+1}")
+            print(f"Merging set {idx + 1}")
             try:
-                merged_df = pd.merge(all_contacts_df, pd.merge(interface_rsm_df, pd.merge(interface_flatness_df, bsa_df, on='pdb_file'), on='pdb_file'), on='pdb_file')
+                merged_df = pd.merge(all_contacts_df,
+                                     pd.merge(interface_rsm_df, pd.merge(interface_flatness_df, bsa_df, on='pdb_file'),
+                                              on='pdb_file'), on='pdb_file')
                 combined_df = pd.concat([combined_df, merged_df], ignore_index=True)
             except Exception as e:
-                print(f"Error merging set {idx+1}: {e}")
+                print(f"Error merging set {idx + 1}: {e}")
         else:
-            print(f"Skipping set {idx+1} due to missing files")
+            print(f"Skipping set {idx + 1} due to missing files")
 
     # Check if combined_df is empty before saving
     if not combined_df.empty:
@@ -70,6 +76,7 @@ def main(full_dir: str):
         print("CSV files have been successfully combined into 'combined_data.csv'")
     else:
         print("No data to combine. Please check the input files.")
+
 
 if __name__ == "__main__":
     main('capri_csvs')

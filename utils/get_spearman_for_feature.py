@@ -31,16 +31,10 @@ for pdb_id, group in grouped:
     plt.yticks(fontsize=16)
 
     plt.grid(False)
-    
-    # Save each plot as a file
+
     plt.savefig(f'/home/annsong/Desktop/Yale_Research_Internship_24/Protein-Decoy-Detection-SVR/spearman_plots/rsm/{pdb_id}.png')
     plt.close()
 
-# Convert the results to a DataFrame
 results_df = pd.DataFrame(correlation_results)
-
-# Display the results
 print(results_df)
-
-# Optionally, save the results to a CSV file
 results_df.to_csv('rsm_spearman_correlations.csv', index=False)

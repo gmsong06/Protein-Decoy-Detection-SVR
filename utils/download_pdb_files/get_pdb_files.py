@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 
 # Path to the CSV file containing the list of PDB IDs and assembly IDs
-pdb_list_csv = 'supersampled_candidates_list.csv'
+pdb_list_csv = 'data/supersampled_candidates_list.csv'
 
 # Directory to save the downloaded PDB files
 output_dir = 'pdb_assembly_files'
