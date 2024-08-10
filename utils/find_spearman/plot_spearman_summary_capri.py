@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Load data from CSV files
+# Include methods that are needed for plot
 methods = ['SVR_NO_HYDRO']
 
 data = {}

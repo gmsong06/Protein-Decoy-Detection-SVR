@@ -4,7 +4,48 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6447951-dc34-40e5-8700-f8780753b71c" name="Changes" comment="" />
+    <list default="true" id="c6447951-dc34-40e5-8700-f8780753b71c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.001_0.001.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.001_0.01.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.001_0.1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.001_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.001_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.001_100.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.01_0.001.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.01_0.01.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.01_0.1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.01_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.01_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.01_100.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.1_0.001.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.1_0.01.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.1_0.1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.1_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/0.1_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/100_0.001.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/100_0.1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/10_0.001.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/10_0.01.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/10_0.1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/10_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/1_0.001.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/1_0.01.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/1_0.1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/all_predictions/1_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T30_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T32_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T35_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T37_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T39_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T41_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T46_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T47_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T50_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T53_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capri_csvs/bsa/capri_T54_bsa.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/find_spearman/plot_spearman_summary_capri.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/find_spearman/plot_spearman_summary_capri.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,6 +73,11 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/data" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/features/electrostatics" />
+      <recent name="$PROJECT_DIR$/features" />
+      <recent name="$PROJECT_DIR$/presentation_figures" />
     </key>
   </component>
   <component name="SharedIndexes">
